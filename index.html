@@ -3,9 +3,18 @@
 <meta name="description" content="A site I built for free to host my various project and such">
 <meta property="og:image" content="https://nichowas.github.io/NickDevSite/logo.png">
 
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<meta name="google-signin-client_id" content="894823189716-ccnva78uf040snt722ah99culli84b12.apps.googleusercontent.com">
+
 <script src="https://nickdevserver.herokuapp.com/socket.io/socket.io.js"></script>
 <link rel="stylesheet" href="style.css">
 </link>
+<div id="sign-in">
+    <img id='signin-img'>
+    <p id='signin-p'></p>
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    <button id='signin-button'>SIGN OUT</button>
+</div>
 <div id="board" class="disconnect">
     <img class="piece white pawn" id="piece#0"></img>
     <img class="piece white pawn" id="piece#1"></img>
@@ -51,13 +60,11 @@
 
     <img class="piece black queen" id="piece#31"></img>
 </div>
-<form id="game-form">
-    <input id="game-form-text" type="text" placeholder="Enter Name">
 
+<form id="game-form">
     <input id="game-form-submit" type="submit" value="START NEW GAME">
 </form>
 <form id="challenge-form">
-    <input id="challenge-form-text" type="text" placeholder="Enter Your Name"> vs
     <input id="challenge-form-opponent" type="text" placeholder="Enter Opponents Name">
 
     <input id="challenge-form-submit" type="submit" value="CHALLENGE">

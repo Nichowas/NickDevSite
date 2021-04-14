@@ -1,5 +1,5 @@
 #board {
-        position: absolute;
+        /* position: absolute; */
         width: 320px;
         height: 320px;
         background-image:
@@ -16,6 +16,7 @@
         background-position: 0 0, 0 40px, 0 80px, 0 120px, 0 160px, 0 200px, 0 240px, 0 280px;
         background-repeat: repeat-x;
         background-size: 80px 40px;
+        margin-bottom: 10px;
     }
     #board.disconnect {
         --dark-col: #c00;
@@ -48,15 +49,39 @@
     .piece:hover {
         cursor: pointer;
     }
-#game-form {
-    position: relative;
-    top: 330px;
+
+
+#sign-in {
+    height: 36px;
+    margin-bottom: 10px;
+    background-color: #eee;
+    padding: 10px;
 }
-#challenge-form {
-    position: relative;
-    top: 320px;
+#sign-in > * {
+    display: inline-block;
 }
-#rooms-text {
-    position: relative;
-    top: 320px;
+#sign-in > img {
+    width: 36px;
+    height: 36px;
+    margin-right: 10px;
+    border-radius: 50%;
+    display: none;
+}
+#sign-in > p {
+    margin: 0;
+    margin-top: 10px;
+    margin-right: 10px;
+    font-size: 20px;
+    display: none;
+
+    vertical-align: top;
+}
+#sign-in > button {
+    height: 36px;
+    background: #ddd;
+    float: right;
+    display: none;
+}
+.g-signin2 {
+    float: right;
 }

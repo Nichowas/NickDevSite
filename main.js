@@ -62,35 +62,31 @@ socket.on('rooms', rooms => {
 })
 
 var gform = document.getElementById('game-form')
-var gformText = document.getElementById('game-form-text')
 var gformSubmit = document.getElementById('game-form-submit')
 
 
 gform.addEventListener('submit', (e) => {
     e.preventDefault()
-    if (gformText.value === '') return
-    socket.emit('join', gformText.value)
+    if (!nickname) return
+    socket.emit('join', nickname)
     ableForms()
 })
 
 var cform = document.getElementById('challenge-form')
-var cformText = document.getElementById('challenge-form-text')
 var cformOpponent = document.getElementById('challenge-form-opponent')
 var cformSubmit = document.getElementById('challenge-form-submit')
 
 
 cform.addEventListener('submit', (e) => {
     e.preventDefault()
-    if (cformText.value === '' || cformOpponent.value === '') return
+    if (!nickname || cformOpponent.value === '') return
     if (!Rooms.find(g => g[0].name === cformOpponent.value && g.length == 1)) return
-    socket.emit('join', cformText.value, cformOpponent.value)
+    socket.emit('join', nickname, cformOpponent.value)
     ableForms()
 })
 
 function ableForms(t = true) {
-    gformText.disabled = t
     gformSubmit.disabled = t
-    cformText.disabled = t
     cformOpponent.disabled = t
     cformSubmit.disabled = t
 }
@@ -99,3 +95,38 @@ function ableForms(t = true) {
 socket.on('join', () => {
     board.className = 'connect'
 })
+
+var signIn = document.getElementsByClassName('g-signin2')[0]
+var signInImg = document.getElementById('signin-img')
+var signInName = document.getElementById('signin-p')
+var signInButton = document.getElementById('signin-button')
+
+var nickname;
+
+const clientID = "894823189716 - ccnva78uf040snt722ah99culli84b12.apps.googleusercontent.com"
+function onSignIn(googleUser) {
+    var profile = googleUser.getBasicProfile();
+    // signIn.style.display = 'none'
+    signInImg.src = profile.getImageUrl()
+    signInImg.style.display = 'inline-block'
+
+    nickname = profile.getName()
+    signInName.innerHTML = nickname
+    signInName.style.display = 'inline-block'
+
+    signIn.style.display = 'none'
+    signInButton.style.display = 'inline-block'
+    signInButton.onclick = async () => {
+        await gapi.auth2.getAuthInstance().signOut()
+        nickname = ''
+        signInImg.style.display = 'none'
+
+        signInName.style.display = 'none'
+        signInName.innerHTML = ''
+
+        signIn.style.display = 'inline-block'
+        signInButton.style.display = 'none'
+    }
+}
+// CLIENT ID = 894823189716-ccnva78uf040snt722ah99culli84b12.apps.googleusercontent.com
+// CLIENT SECRET = 0BOFJcEeMbPLbXxjzUo801MX

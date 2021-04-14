@@ -87,10 +87,11 @@ class Piece {
         this.game.pieces[this.rid] = null;
     }
     render() {
+
         this.div.style.display = 'block'
         this.div.src = `PieceImages/${this.player.label}-${this.type.name.toLowerCase()}.svg`
-        this.div.style.left = (this.x * 40) + 'px'
-        this.div.style.top = (this.y * 40) + 'px'
+        this.div.style.left = (8 + this.x * 40) + 'px'
+        this.div.style.top = (74 + this.y * 40) + 'px'
     }
     onclick(e) {
         this.game.removeHighlights()
