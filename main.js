@@ -128,5 +128,3 @@ function onSignIn(googleUser) {
         signInButton.style.display = 'none'
     }
 }
-// CLIENT ID = 894823189716-ccnva78uf040snt722ah99culli84b12.apps.googleusercontent.com
-// CLIENT SECRET = 0BOFJcEeMbPLbXxjzUo801MX
