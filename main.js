@@ -1,5 +1,5 @@
-const port = 'https://nickdevserver.herokuapp.com/';
-// const port = 'http://localhost:8080';
+// const port = 'https://nickdevserver.herokuapp.com/';
+const port = 'http://localhost:3000';
 var socket = io.connect(port);
 var game = new Game(
     new Pawn(0, 6), new Pawn(1, 6), new Pawn(2, 6), new Pawn(3, 6),
@@ -36,64 +36,23 @@ socket.on('ready', (i) => {
     }
     // socket.emit('update', p1)
 })
-socket.on('leave', () => {
+socket.on('soft-leave', () => {
+    game.removeHighlights()
+    game.clientTurn = null;
+})
+socket.on('hard-leave', () => {
     game.removeHighlights()
     board.className = 'disconnect'
+    connected = undefined;
     game.clientTurn = null;
 })
 
-var roomsText = document.getElementById('rooms-text')
-function roomsToText(rooms) {
-    let text = 'GAMES:\n'
-    for (let i = 0; i < rooms.length; i++) {
-        text += `Game #${i}:\n`
-        for (let j = 0; j < rooms[i].length; j++) {
-            text += ` > ${rooms[i][j].name}\n`
-        }
-    }
-    return text
-}
-
-var Rooms = []
-socket.on('rooms', rooms => {
-    Rooms = rooms
-    let text = roomsToText(rooms).replace(/\n/g, '</br>')
-    roomsText.innerHTML = text
-})
-
-var gform = document.getElementById('game-form')
-var gformSubmit = document.getElementById('game-form-submit')
 
 
-gform.addEventListener('submit', (e) => {
-    e.preventDefault()
-    if (!nickname) return
-    socket.emit('join', nickname)
-    ableForms()
-})
-
-var cform = document.getElementById('challenge-form')
-var cformOpponent = document.getElementById('challenge-form-opponent')
-var cformSubmit = document.getElementById('challenge-form-submit')
-
-
-cform.addEventListener('submit', (e) => {
-    e.preventDefault()
-    if (!nickname || cformOpponent.value === '') return
-    if (!Rooms.find(g => g[0].name === cformOpponent.value && g.length == 1)) return
-    socket.emit('join', nickname, cformOpponent.value)
-    ableForms()
-})
-
-function ableForms(t = true) {
-    gformSubmit.disabled = t
-    cformOpponent.disabled = t
-    cformSubmit.disabled = t
-}
-
-
-socket.on('join', () => {
+var connected;
+socket.on('join', (r) => {
     board.className = 'connect'
+    connected = r
 })
 
 var signIn = document.getElementsByClassName('g-signin2')[0]
@@ -128,3 +87,55 @@ function onSignIn(googleUser) {
         signInButton.style.display = 'none'
     }
 }
+function clientDiv(c) {
+    let div = document.createElement('div')
+    div.className = 'room-client'
+    div.innerHTML = c.name
+
+    return div
+}
+function roomDiv(r, i, ...clients) {
+    let div = document.createElement('div')
+    div.className = 'room'
+    div.innerHTML = r
+
+    for (let c of clients) {
+        div.appendChild(clientDiv(c))
+    }
+
+    let button = document.createElement('div')
+    button.id = 'join-game'
+    button.className = ''
+    if (connected === undefined || connected != i)
+        button.className = 'join'
+    button.innerHTML = '<div></div><div></div>'
+
+    button.addEventListener('click', () => {
+        if (connected === undefined || connected != i) {
+            socket.emit('join', nickname, i)
+        } else {
+            socket.emit('leave')
+        }
+    })
+    div.appendChild(button)
+    return div
+}
+
+var roomsWrapper = document.getElementById('rooms-wrapper')
+
+var Rooms = []
+socket.on('rooms', rooms => {
+    Rooms = rooms
+    while (roomsWrapper.firstChild) {
+        roomsWrapper.removeChild(roomsWrapper.firstChild);
+    }
+
+    for (let i in rooms)
+        roomsWrapper.appendChild(roomDiv(`Game #${i}`, i, ...rooms[i]))
+
+    let button = document.createElement('div')
+    button.id = 'new-game'
+    button.innerHTML = '<div></div><div></div>'
+    button.onclick = () => { socket.emit('join', nickname) }
+    roomsWrapper.appendChild(button)
+})

@@ -101,11 +101,10 @@ class Piece {
         for (let i = 0; i < moves.length; i++) {
             let highlight = document.createElement('div')
             highlight.className = 'highlight'
-            highlight.style.left = moves[i][0] * 40 + 'px'
-            highlight.style.top = moves[i][1] * 40 + 'px'
+            highlight.style.left = (8 + moves[i][0] * 40) + 'px'
+            highlight.style.top = (74 + moves[i][1] * 40) + 'px'
 
             highlight.onclick = (e) => this.moveOnClick(e, moves[i])
-            // }
 
             board.appendChild(highlight)
             h.push(highlight)
