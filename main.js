@@ -75,9 +75,12 @@ function onSignIn(googleUser) {
 
     signIn.style.display = 'none'
     signInButton.style.display = 'inline-block'
+
+
+    render(Rooms)
     signInButton.onclick = async () => {
         await gapi.auth2.getAuthInstance().signOut()
-        nickname = ''
+        nickname = undefined
         signInImg.style.display = 'none'
 
         signInName.style.display = 'none'
@@ -85,6 +88,9 @@ function onSignIn(googleUser) {
 
         signIn.style.display = 'inline-block'
         signInButton.style.display = 'none'
+
+        socket.emit('leave')
+        render(Rooms)
     }
 }
 function clientDiv(c) {
@@ -105,16 +111,20 @@ function roomDiv(r, i, ...clients) {
 
     let button = document.createElement('div')
     button.id = 'join-game'
-    button.className = ''
+    button.className = 'game'
     if (connected === undefined || connected != i)
-        button.className = 'join'
+        button.className += ' join'
     button.innerHTML = '<div></div><div></div>'
 
+    if (nickname !== undefined && (connected == i || clients.length < 2))
+        button.className += ' able'
+
     button.addEventListener('click', () => {
-        if (connected === undefined || connected != i) {
-            socket.emit('join', nickname, i)
-        } else {
-            socket.emit('leave')
+        if (nickname !== undefined && (connected == i || clients.length < 2)) {
+            if (connected === undefined || connected != i)
+                socket.emit('join', nickname, i)
+            else
+                socket.emit('leave')
         }
     })
     div.appendChild(button)
@@ -126,6 +136,10 @@ var roomsWrapper = document.getElementById('rooms-wrapper')
 var Rooms = []
 socket.on('rooms', rooms => {
     Rooms = rooms
+    render(rooms)
+
+})
+function render(rooms) {
     while (roomsWrapper.firstChild) {
         roomsWrapper.removeChild(roomsWrapper.firstChild);
     }
@@ -135,7 +149,11 @@ socket.on('rooms', rooms => {
 
     let button = document.createElement('div')
     button.id = 'new-game'
+    button.className = 'game'
+    if (nickname !== undefined)
+        button.className += ' able'
     button.innerHTML = '<div></div><div></div>'
-    button.onclick = () => { socket.emit('join', nickname) }
+    button.onclick = () => { if (nickname !== undefined) socket.emit('join', nickname) }
     roomsWrapper.appendChild(button)
-})
+}
+render()

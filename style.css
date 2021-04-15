@@ -103,60 +103,50 @@
     margin-left: 10px;
 }
 
-#new-game {
-    background-color: #eee;
+.game {
     --length: 10px;
-
     padding: 5px;
-    border-radius: 50%;
     width: var(--length);
     height: var(--length);
+    border-radius: 50%;
 }
-#new-game > div {
+.game > div {
     position: absolute;
-    background-color: #aaa;
 
     width: var(--length);
     height: 2px;
+
     margin-top: calc(var(--length)/2 - 2px/2);
+    margin-left: 0px;
+
 }
-#new-game > div:first-child {
+#join-game > div:first-child {display: none;}
+#join-game.join > div:first-child {display: block;}
+
+.game > div:first-child {
     width: 2px;
     height: var(--length);
+
     margin-top: 0px;
     margin-left: calc(var(--length)/2 - 2px/2);
-}
 
-#new-game:hover {cursor: pointer;}
+}
+.game.able:hover {cursor: pointer;}
 
 #join-game {
-    --length: 10px;
-    background-color: #ccc;
-    padding: 5px;
-    width: var(--length);
-    height: var(--length);
-    border-radius: 50%;
     margin-top: 10px;
     margin-left: 10px;
-}
-#join-game > div {
-    position: absolute;
     background-color: #aaa;
+}
+#join-game.able {background-color: #ddd;}
 
-    width: var(--length);
-    height: 2px;
-    margin-top: calc(var(--length)/2 - 2px/2);
-}
-#join-game > div:first-child {
-    width: 2px;
-    height: var(--length);
-    margin-top: 0px;
-    margin-left: calc(var(--length)/2 - 2px/2);
-    display: none;
-}
-#join-game.join > div:first-child {
-    display: block;
-}
+#join-game > div {background-color: #777;}
+#join-game.able > div {background-color: #aaa;}
 
-#join-game.join {background-color: #ddd;}
-#join-game:hover {cursor: pointer;}
+#new-game {background-color: #bbb;}
+#new-game.able {background-color: #eee;}
+
+#new-game > div {background-color: #888;}
+#new-game.able > div {background-color: #bbb;}
+
+
