@@ -1,5 +1,5 @@
-// const port = 'https://nickdevserver.herokuapp.com/';
-const port = 'http://localhost:3000';
+const port = 'https://nickdevserver.herokuapp.com/';
+// const port = 'http://localhost:3000';
 var socket = io.connect(port);
 var game = new Game(
     new Pawn(0, 6), new Pawn(1, 6), new Pawn(2, 6), new Pawn(3, 6),
