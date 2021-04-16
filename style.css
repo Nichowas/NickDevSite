@@ -1,55 +1,50 @@
 #board {
-        /* position: absolute; */
-        width: 320px;
-        height: 320px;
-        background-image:
-            linear-gradient(90deg,  var(--dark-col) 40px,  var(--light-col) 40px),
-            linear-gradient(90deg, var(--light-col) 40px, var(--dark-col)  40px),
-            linear-gradient(90deg, var(--dark-col)  40px, var(--light-col) 40px),
-            linear-gradient(90deg, var(--light-col) 40px, var(--dark-col)  40px),
-            linear-gradient(90deg, var(--dark-col)  40px, var(--light-col) 40px),
-            linear-gradient(90deg, var(--light-col) 40px, var(--dark-col)  40px),
-            linear-gradient(90deg, var(--dark-col)  40px, var(--light-col)40px),
-            linear-gradient(90deg, var(--light-col) 40px, var(--dark-col)  40px);
+    /* position: absolute; */
+    width: 320px;
+    height: 320px;
+    background-image:
+        linear-gradient(90deg,  var(--dark-col) 40px,  var(--light-col) 40px),
+        linear-gradient(90deg, var(--light-col) 40px, var(--dark-col)  40px),
+        linear-gradient(90deg, var(--dark-col)  40px, var(--light-col) 40px),
+        linear-gradient(90deg, var(--light-col) 40px, var(--dark-col)  40px),
+        linear-gradient(90deg, var(--dark-col)  40px, var(--light-col) 40px),
+        linear-gradient(90deg, var(--light-col) 40px, var(--dark-col)  40px),
+        linear-gradient(90deg, var(--dark-col)  40px, var(--light-col)40px),
+        linear-gradient(90deg, var(--light-col) 40px, var(--dark-col)  40px);
+    background-position: 0 0, 0 40px, 0 80px, 0 120px, 0 160px, 0 200px, 0 240px, 0 280px;
+    background-repeat: repeat-x;
+    background-size: 80px 40px;
+}
+#board.disconnect {
+    --dark-col: #c00;
+    --light-col: #f00;
+}
+#board.connect {
+    --dark-col: #b88b4a;
+    --light-col: #e3c16f;
+}
+.highlight {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: #ff0000a0;
+}
 
+.highlight:hover {
+    cursor: pointer;
+}
 
-        background-position: 0 0, 0 40px, 0 80px, 0 120px, 0 160px, 0 200px, 0 240px, 0 280px;
-        background-repeat: repeat-x;
-        background-size: 80px 40px;
-        margin-bottom: 10px;
-    }
-    #board.disconnect {
-        --dark-col: #c00;
-        --light-col: #f00;
-    }
-
-    #board.connect {
-        --dark-col: #b88b4a;
-        --light-col: #e3c16f;
-    }
-    .highlight {
-        position: absolute;
-        width: 40px;
-        height: 40px;
-        background-color: #ff0000a0;
-    }
-
-    .highlight:hover {
-        cursor: pointer;
-    }
-
-    .piece {
-        position: absolute;
-        width: 40px;
-        height: 40px;
-        font-size: 40px;
-        user-select: none;
-        display: none;
-    }
-    .piece:hover {
-        cursor: pointer;
-    }
-
+.piece {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+    user-select: none;
+    display: none;
+}
+.piece:hover {
+    cursor: pointer;
+}
 
 #sign-in {
     width: max-content;
@@ -91,7 +86,8 @@
     font-size: 12px;
     text-align: center;
     border-radius: 50%;
-    padding: 2px;
+    padding: 2px;    
+    
     --length: 12px;
     transform: rotate(45deg);
     cursor: pointer;
@@ -175,4 +171,21 @@
 #new-game > div {background-color: #888;}
 #new-game.able > div {background-color: #bbb;}
 
+.graveyard-piece {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
 
+}
+
+#wgraveyard {
+    width: 320px;
+    height: 20px;
+    background-color: #eee;
+    margin-bottom: 10px;
+}
+#bgraveyard {
+    width: 320px;
+    height: 20px;
+    background-color: #eee;
+}

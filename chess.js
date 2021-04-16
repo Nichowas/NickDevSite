@@ -1,6 +1,19 @@
 const board = document.getElementById('board')
+const wgraveyard = document.getElementById('wgraveyard')
+const bgraveyard = document.getElementById('bgraveyard')
+
+
 class Game {
+    static valueMap = {
+        Pawn: 1,
+        Knight: 3,
+        Bishop: 3,
+        Rook: 5,
+        Queen: 9
+    }
     constructor(...ps) {
+        this.box = board.getBoundingClientRect()
+
         this.White = { label: 'white' }
         this.Black = { label: 'black', not: this.White }
         this.White.not = this.Black
@@ -11,6 +24,37 @@ class Game {
         this.passant = null;
         let i = 0
         this.pieces.forEach(p => { p.init(this, i < 16 ? this.White : this.Black, i); i++ })
+        this.wgraveyard = []
+        this.bgraveyard = []
+        this.renderGraveyard()
+    }
+    renderGraveyard() {
+
+        let sorted = this.wgraveyard.sort((a, b) => Game.valueMap[b.type] - Game.valueMap[a.type])
+        while (wgraveyard.firstChild) wgraveyard.removeChild(wgraveyard.firstChild)
+        for (let i in sorted) {
+            let w = sorted[i]
+            let src = `PieceImages/white-${w.type.toLowerCase()}.svg`
+
+            let div = document.createElement('img')
+            div.className = `graveyard-piece`
+            div.src = src
+
+            wgraveyard.appendChild(div)
+        }
+
+        sorted = this.bgraveyard.sort((a, b) => Game.valueMap[b.type] - Game.valueMap[a.type])
+        while (bgraveyard.firstChild) bgraveyard.removeChild(bgraveyard.firstChild)
+        for (let i in sorted) {
+            let b = sorted[i]
+            let src = `PieceImages/black-${b.type.toLowerCase()}.svg`
+
+            let div = document.createElement('img')
+            div.className = `graveyard-piece`
+            div.src = src
+
+            bgraveyard.appendChild(div)
+        }
     }
     setTurn(cturn) {
         this.clientTurn = cturn ? this.Black : this.White;
@@ -55,7 +99,7 @@ class Piece {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.type = this.constructor
+        this.type = this.constructor.name
     }
     init(game, pl, id) {
         this.player = pl
@@ -82,16 +126,23 @@ class Piece {
         return p
     }
     remove(fr) {
-        if (fr)
+        if (fr) {
+            if (this.player === this.game.White)
+                this.game.wgraveyard.push(this)
+            else
+                this.game.bgraveyard.push(this)
+
+            this.game.renderGraveyard()
             this.div.style.display = 'none'
+        }
         this.game.pieces[this.rid] = null;
     }
     render() {
-
         this.div.style.display = 'block'
-        this.div.src = `PieceImages/${this.player.label}-${this.type.name.toLowerCase()}.svg`
-        this.div.style.left = (8 + this.x * 40) + 'px'
-        this.div.style.top = (74 + this.y * 40) + 'px'
+        this.div.src = `PieceImages/${this.player.label}-${this.type.toLowerCase()}.svg`
+        this.div.style.left = (this.game.box.left + this.x * 40) + 'px'
+        //74
+        this.div.style.top = (this.game.box.top + this.y * 40) + 'px'
     }
     onclick(e) {
         this.game.removeHighlights()
@@ -101,8 +152,8 @@ class Piece {
         for (let i = 0; i < moves.length; i++) {
             let highlight = document.createElement('div')
             highlight.className = 'highlight'
-            highlight.style.left = (8 + moves[i][0] * 40) + 'px'
-            highlight.style.top = (74 + moves[i][1] * 40) + 'px'
+            highlight.style.left = (this.game.box.left + moves[i][0] * 40) + 'px'
+            highlight.style.top = (this.game.box.top + moves[i][1] * 40) + 'px'
 
             highlight.onclick = (e) => this.moveOnClick(e, moves[i])
 
