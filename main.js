@@ -63,7 +63,13 @@ var signInButton = document.getElementById('signin-button')
 var nickname;
 
 const clientID = "894823189716 - ccnva78uf040snt722ah99culli84b12.apps.googleusercontent.com"
-function onSignIn(googleUser) {
+var google, googleU;
+
+
+async function onSignIn(googleUser) {
+    signIn.firstChild.firstChild.children[1].display = 'none'
+    signIn.firstChild.style.width = '36px'
+
     var profile = googleUser.getBasicProfile();
     // signIn.style.display = 'none'
     signInImg.src = profile.getImageUrl()
@@ -73,13 +79,20 @@ function onSignIn(googleUser) {
     signInName.innerHTML = nickname
     signInName.style.display = 'inline-block'
 
-    signIn.style.display = 'none'
+    // signIn.style.display = 'none'
     signInButton.style.display = 'inline-block'
 
 
     render(Rooms)
     signInButton.onclick = async () => {
-        await gapi.auth2.getAuthInstance().signOut()
+        google = gapi.auth2.getAuthInstance()
+        await google.disconnect()
+        await google.signOut()
+
+
+        signIn.firstChild.firstChild.children[1].display = 'inline-block'
+        signIn.firstChild.style.width = '120px'
+
         nickname = undefined
         signInImg.style.display = 'none'
 

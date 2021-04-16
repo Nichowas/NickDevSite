@@ -52,7 +52,8 @@
 
 
 #sign-in {
-    width: 300px;
+    width: max-content;
+    min-width: 300px;
     height: 36px;
     margin-bottom: 10px;
     background-color: #eee;
@@ -61,14 +62,14 @@
 #sign-in > * {
     display: inline-block;
 }
-#sign-in > img {
+#signin-img {
     width: 36px;
     height: 36px;
     margin-right: 10px;
     border-radius: 50%;
     display: none;
 }
-#sign-in > p {
+#signin-p {
     margin: 0;
     margin-top: 10px;
     margin-right: 10px;
@@ -77,16 +78,41 @@
 
     vertical-align: top;
 }
-#sign-in > button {
-    height: 36px;
-    background: #ddd;
-    float: right;
-    display: none;
-}
 .g-signin2 {
     float: right;
+    margin-left: 30px;
 }
+#signin-button {
+    width: 12px;
+    height: 12px;
+    background: #f00;
+    float: right;
+    display: none;
+    font-size: 12px;
+    text-align: center;
+    border-radius: 50%;
+    padding: 2px;
+    --length: 12px;
+    transform: rotate(45deg);
+    cursor: pointer;
+}
+#signin-button > div {
+    background-color: #fff;
+    position: absolute;
 
+    width: 10px;
+    height: 2px;
+
+    margin-top: calc(var(--length)/2 - 2px/2);
+    margin-left: 1px;
+}
+#signin-button > div:first-child {
+    width: 2px;
+    height: 10px;
+
+    margin-top: 1px;
+    margin-left: calc(var(--length)/2 - 2px/2);
+}
 .room {
     background-color: #eee;
     width: 300px;
