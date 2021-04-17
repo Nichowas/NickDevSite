@@ -13,6 +13,11 @@ class Game {
     }
     constructor(...ps) {
         this.box = board.getBoundingClientRect()
+        this.box = {
+            left: this.box.left + document.body.scrollLeft,
+            top: this.box.top + document.body.scrollTop
+
+        }
 
         this.White = { label: 'white' }
         this.Black = { label: 'black', not: this.White }
@@ -94,6 +99,17 @@ class Game {
 
         return count > 0
     }
+    findCheck() {
+        let check = this.inCheck(this.serverTurn.king) ? 1 : 0
+        let noptions = this.pieces
+            .filter(p => p && p.player === this.serverTurn)
+            .reduce((a, p) => p ? a + p.getMoves().length : a, 0) ? 0 : 2
+        return check + noptions
+        // 0 + 0 (no check    options)    => 0 (valid)
+        // 1 + 0 (check       options)    => 1 (check)
+        // 0 + 2 (no check    no options) => 2 (stalemate)
+        // 1 + 2 (check       no options) => 3 (checkmate)
+    }
 }
 class Piece {
     constructor(x, y) {
@@ -107,9 +123,9 @@ class Piece {
         this.game = game
         this.rid = id
         this.id = `piece#${id}`
-
         this.div = document.getElementById(this.id)
         this.div.onclick = (e) => this.onclick(e)
+        this.class = this.div.className
 
         this.render()
     }
@@ -170,8 +186,35 @@ class Piece {
         this.render()
         this.div.onclick = (e) => this.onclick(e)
 
-        if (this.game.moveMade)
-            this.game.moveMade(this, ...m)
+        this.game.serverTurn = this.game.clientTurn.not
+
+        let check = this.game.findCheck()
+        switch (check) {
+            case 0: // normal move
+                this.game.serverTurn.king.div.className = this.game.serverTurn.king.class
+                this.game.clientTurn.king.div.className = this.game.clientTurn.king.class
+
+                if (this.game.moveMade)
+                    this.game.moveMade(this, ...m)
+                break
+
+            case 1: // check
+                this.game.serverTurn.king.div.className = this.game.serverTurn.king.class + ' check'
+                this.game.clientTurn.king.div.className = this.game.clientTurn.king.class
+                if (this.game.checkMade)
+                    this.game.checkMade(this, ...m)
+                break
+
+            case 2: // stalemate
+                if (this.game.checkMate)
+                    this.game.checkMate(this, ...m)
+                break
+
+            case 3: // checkmate
+                if (this.game.checkMate)
+                    this.game.checkMate(this, ...m)
+                break
+        }
     }
     altOnclick(e) {
         this.game.removeHighlights()
@@ -447,6 +490,8 @@ class King extends Piece {
         this.id = `piece#${id}`
         this.div = document.getElementById(this.id)
         this.div.onclick = (e) => this.onclick(e)
+        this.class = this.div.className
+
         this.render()
 
         pl.king = this

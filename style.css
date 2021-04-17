@@ -27,7 +27,7 @@
     position: absolute;
     width: 40px;
     height: 40px;
-    background-color: #ff0000a0;
+    background-color: #f00a;
 }
 
 .highlight:hover {
@@ -42,6 +42,8 @@
     user-select: none;
     display: none;
 }
+.piece.check { background-color: #f007;}
+
 .piece:hover {
     cursor: pointer;
 }
@@ -191,3 +193,13 @@
     height: 20px;
     background-color: #eee;
 }
+
+.abcRioButtonIconImage {
+    width: 20px !important;
+    height: 20px !important;
+}
+.abcRioButtonSvg {
+    width: 20px !important;
+    height: 20px !important;
+}
+
