@@ -66,9 +66,11 @@
 }
 #signin-p {
     margin: 0;
-    margin-top: 10px;
+    margin-top: 7px;
+    margin-bottom: 7px;
+
     margin-right: 10px;
-    font-size: 20px;
+    font-size: 19px;
     display: none;
 
     vertical-align: top;
