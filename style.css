@@ -1,4 +1,12 @@
+#container {
+    font-size: 0;
+    height: 320px;
+}
 #board {
+    position: relative;
+    /* bottom: 40px; */
+    display: inline-block;
+
     width: 320px;
     height: 320px;
     background-image:
@@ -14,6 +22,75 @@
     background-repeat: repeat-x;
     background-size: 80px 40px;
 }
+.graveyard-piece {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+
+}
+#wgraveyard {
+    width: 320px;
+    height: 20px;
+    background-color: #eee;
+    margin-bottom: 10px;
+}
+#bgraveyard {
+    width: 320px;
+    height: 20px;
+    background-color: #eee;
+}
+#game-options {
+    display: inline-block;
+    position: relative;
+    bottom: 160px;
+    width: calc(200px - 10px - 20px);
+    height: calc(360px - 10px - 20px);
+    margin-left: 10px;
+    background-color: #421;
+    border: 5px solid #221108;
+    padding: 10px;
+    vertical-align: middle;
+
+}
+#resign {
+    background-color: #fff;
+    padding: 5px;
+    /* padding-right: calc(100% - 10px - 30px); */
+    border-radius: 5px;
+    cursor: pointer;
+
+    margin-top: 15px;
+    box-shadow: 0px -5px #221108
+}
+#resign > span {
+    padding: 0px;
+    font-size: 15px;
+    position: relative;
+    bottom: 4px;
+}
+#resign > img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+#score {
+    font-size: 15px;
+    height: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0px -5px #221108
+}
+#wins {
+    float: left;
+}
+#losses {
+    float: right
+}
+
+
 #board.disconnect {
     --dark-col: #c00;
     --light-col: #f00;
@@ -173,25 +250,6 @@
 
 #new-game > div {background-color: #888;}
 #new-game.able > div {background-color: #bbb;}
-
-.graveyard-piece {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-
-}
-
-#wgraveyard {
-    width: 320px;
-    height: 20px;
-    background-color: #eee;
-    margin-bottom: 10px;
-}
-#bgraveyard {
-    width: 320px;
-    height: 20px;
-    background-color: #eee;
-}
 
 .abcRioButtonIconImage {
     width: 20px !important;

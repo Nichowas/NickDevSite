@@ -12,11 +12,11 @@ class Game {
         Queen: 9
     }
     constructor(...ps) {
-        this.box = board.getBoundingClientRect()
+        // this.box = board.getBoundingClientRect()
         this.box = {
-            left: this.box.left + document.body.scrollLeft,
-            top: this.box.top + document.body.scrollTop
-
+            // left: this.box.left + document.body.scrollLeft,
+            // top: this.box.top + document.body.scrollTop
+            left: 0, top: 0
         }
 
         this.White = { label: 'white' }

@@ -44,36 +44,53 @@ socket.on('ready', (i) => {
         socket.emit('update', { piece: p.rid, x, y, check: false })
     }
     game.checkMate = function (p, x, y) {
-        socket.emit('game-end', { piece: p.rid, x, y })
+        socket.emit('game-end', { piece: p.rid, x, y }, 1)
     }
     game.checkMade = function (p, x, y) {
         socket.emit('update', { piece: p.rid, x, y, check: true })
     }
+
+    resign.style.display = 'block'
     // socket.emit('update', p1)
 })
 socket.on('soft-leave', () => {
     game.removeHighlights()
     game.clientTurn = null;
+    resign.style.display = 'none'
 })
 socket.on('hard-leave', () => {
     game.removeHighlights()
     board.className = 'disconnect'
     connected = undefined;
     game.clientTurn = null;
+    resign.style.display = 'none'
 })
-socket.on('game-end', (data) => {
-    let { piece: id, x, y } = data
-    let p = game.pieces[id]
+var winsText = document.getElementById('wins')
+var lossesText = document.getElementById('losses')
+var wins = 0, losses = 0
+winsText.innerHTML = `WINS:   ${wins}`
+lossesText.innerHTML = `LOSSES: ${losses}`
 
-    p.makeMove(x, y, true)
-    p.render()
+socket.on('game-end', (data, w, l) => {
+    wins = w; losses = l
+    winsText.innerHTML = `WINS:   ${wins}`
+    lossesText.innerHTML = `LOSSES: ${losses}`
 
+
+
+    if (data) {
+        let { piece: id, x, y } = data
+        let p = game.pieces[id]
+
+        p.makeMove(x, y, true)
+        p.render()
+    }
     game.removeHighlights()
     board.className = 'disconnect'
     connected = undefined;
     game.clientTurn = null;
 
-
+    resign.style.display = 'none'
     socket.emit('game-end2')
 })
 
@@ -190,14 +207,12 @@ function roomDiv(r, i, ...clients) {
     div.appendChild(button)
     return div
 }
-
 var roomsWrapper = document.getElementById('rooms-wrapper')
 
 var Rooms = []
-socket.on('rooms', rooms => {
+socket.on('rooms', (rooms) => {
     Rooms = rooms
     render(rooms)
-
 })
 function render(rooms) {
     while (roomsWrapper.firstChild) {
@@ -218,6 +233,13 @@ function render(rooms) {
 }
 render()
 
+var resign = document.getElementById('resign')
+var userdata = document.getElementById('userdata')
+
+resign.style.display = 'none'
+resign.addEventListener('click', () => {
+    socket.emit('game-end', undefined, 2)
+})
 // Comments for forcing changes
 /*
     CHANGE COUNT: 2
