@@ -22,6 +22,7 @@ socket.on('update', (data) => {
     let { piece: id, x, y, check } = data
     let p = game.pieces[id]
 
+    game.addMoveTrail(p.x, p.y, x, y)
     p.makeMove(x, y, true)
     p.render()
 
@@ -37,8 +38,6 @@ socket.on('update', (data) => {
 
 })
 socket.on('ready', (i) => {
-    board.className = 'connect'
-
     game.setTurn(i)
     game.moveMade = function (p, x, y) {
         socket.emit('update', { piece: p.rid, x, y, check: false })
@@ -60,7 +59,6 @@ socket.on('soft-leave', () => {
 })
 socket.on('hard-leave', () => {
     game.removeHighlights()
-    board.className = 'disconnect'
     connected = undefined;
     game.clientTurn = null;
     resign.style.display = 'none'
@@ -81,12 +79,12 @@ socket.on('game-end', (data, w, l) => {
     if (data) {
         let { piece: id, x, y } = data
         let p = game.pieces[id]
+        game.addMoveTrail(p.x, p.y, x, y)
 
         p.makeMove(x, y, true)
         p.render()
     }
     game.removeHighlights()
-    board.className = 'disconnect'
     connected = undefined;
     game.clientTurn = null;
 
@@ -98,7 +96,6 @@ socket.on('game-end', (data, w, l) => {
 
 var connected;
 socket.on('join', (r) => {
-    board.className = 'connect'
     connected = r
 
     game = new Game(

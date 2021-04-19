@@ -3,6 +3,9 @@
     height: 320px;
 }
 #board {
+    --dark-col: #b88b4a;
+    --light-col: #e3c16f;
+
     position: relative;
     /* bottom: 40px; */
     display: inline-block;
@@ -89,24 +92,18 @@
 #losses {
     float: right
 }
-
-
-#board.disconnect {
-    --dark-col: #c00;
-    --light-col: #f00;
-}
-#board.connect {
-    --dark-col: #b88b4a;
-    --light-col: #e3c16f;
-}
 .highlight {
     position: absolute;
     width: 40px;
     height: 40px;
     background-color: #f00a;
+    cursor: pointer;
 }
-
-.highlight:hover {
+.highlight-move {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: #f0f2;
     cursor: pointer;
 }
 

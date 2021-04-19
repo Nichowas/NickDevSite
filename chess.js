@@ -110,6 +110,32 @@ class Game {
         // 0 + 2 (no check    no options) => 2 (stalemate)
         // 1 + 2 (check       no options) => 3 (checkmate)
     }
+    position(x, y) {
+        return [
+            this.box.left + x * 40,
+            this.box.top + y * 40
+        ]
+    }
+    addMoveTrail(x, y, mx, my) {
+        if (this.fromHighlight) board.removeChild(this.fromHighlight)
+        if (this.toHighlight) board.removeChild(this.toHighlight)
+
+        let fromHighlight = document.createElement('div')
+        fromHighlight.className = 'highlight-move';
+        let [l, t] = this.position(x, y)
+        fromHighlight.style.left = l + 'px'
+        fromHighlight.style.top = t + 'px'
+
+        let toHighlight = document.createElement('div')
+        toHighlight.className = 'highlight-move';
+        [l, t] = this.position(mx, my)
+        toHighlight.style.left = l + 'px'
+        toHighlight.style.top = t + 'px'
+
+        board.appendChild(fromHighlight)
+        board.appendChild(toHighlight)
+        this.fromHighlight = fromHighlight; this.toHighlight = toHighlight;
+    }
 }
 class Piece {
     constructor(x, y) {
@@ -156,9 +182,10 @@ class Piece {
     render() {
         this.div.style.display = 'block'
         this.div.src = `PieceImages/${this.player.label}-${this.type.toLowerCase()}.svg`
-        this.div.style.left = (this.game.box.left + this.x * 40) + 'px'
+        let [l, t] = this.game.position(this.x, this.y)
+        this.div.style.left = l + 'px'
         //74
-        this.div.style.top = (this.game.box.top + this.y * 40) + 'px'
+        this.div.style.top = t + 'px'
     }
     onclick(e) {
         this.game.removeHighlights()
@@ -168,8 +195,9 @@ class Piece {
         for (let i = 0; i < moves.length; i++) {
             let highlight = document.createElement('div')
             highlight.className = 'highlight'
-            highlight.style.left = (this.game.box.left + moves[i][0] * 40) + 'px'
-            highlight.style.top = (this.game.box.top + moves[i][1] * 40) + 'px'
+            let [l, t] = this.game.position(...moves[i])
+            highlight.style.left = l + 'px'
+            highlight.style.top = t + 'px'
 
             highlight.onclick = (e) => this.moveOnClick(e, moves[i])
 
@@ -181,6 +209,9 @@ class Piece {
         this.div.onclick = (e) => this.altOnclick(e)
     }
     moveOnClick(e, m) {
+        this.game.addMoveTrail(this.x, this.y, ...m)
+
+
         this.game.removeHighlights()
         this.makeMove(...m, true)
         this.render()
