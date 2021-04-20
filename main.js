@@ -115,7 +115,11 @@ socket.on('join', (r) => {
     );
     game.clientTurn = null;
 })
-
+socket.on('user-signin', (w, l) => {
+    wins = w; losses = l
+    winsText.innerHTML = `WINS:   ${wins}`
+    lossesText.innerHTML = `LOSSES: ${losses}`
+})
 var signIn = document.getElementsByClassName('g-signin2')[0]
 var signInImg = document.getElementById('signin-img')
 var signInName = document.getElementById('signin-p')
@@ -124,10 +128,11 @@ var signInButton = document.getElementById('signin-button')
 var nickname;
 
 const clientID = "894823189716 - ccnva78uf040snt722ah99culli84b12.apps.googleusercontent.com"
-var google, googleU;
+var googleID;
 
 
 async function onSignIn(googleUser) {
+    googleID = googleUser.getId()
     signIn.firstChild.firstChild.children[1].display = 'none'
     signIn.firstChild.style.width = '36px'
 
@@ -142,7 +147,7 @@ async function onSignIn(googleUser) {
 
     // signIn.style.display = 'none'
     signInButton.style.display = 'inline-block'
-
+    socket.emit('user-signin', googleID, nickname)
 
     render(Rooms)
     signInButton.onclick = async () => {
@@ -196,7 +201,7 @@ function roomDiv(r, i, ...clients) {
     button.addEventListener('click', () => {
         if (nickname !== undefined && (connected == i || clients.length < 2)) {
             if (connected === undefined || connected != i)
-                socket.emit('join', nickname, i)
+                socket.emit('join', i)
             else
                 socket.emit('leave')
         }
@@ -225,7 +230,7 @@ function render(rooms) {
     if (nickname !== undefined)
         button.className += ' able'
     button.innerHTML = '<div></div><div></div>'
-    button.onclick = () => { if (nickname !== undefined) socket.emit('join', nickname) }
+    button.onclick = () => { if (nickname !== undefined) socket.emit('join') }
     roomsWrapper.appendChild(button)
 }
 render()

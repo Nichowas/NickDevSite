@@ -1,0 +1,8 @@
+TODO:
+- Promotion
+- Spectator Mode
+- Database (MongoDB)
+- User Data
+
+BUGS:
+- remove move trail on new game
