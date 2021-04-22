@@ -22,9 +22,6 @@ var promRook = document.getElementById('promotion-rook')
 var promQueen = document.getElementById('promotion-queen')
 
 var adminDiv = document.getElementById('admin')
-var adminSave = document.getElementById('save')
-
-
 
 var game;
 var wins = 0, losses = 0;
@@ -291,15 +288,7 @@ function guestLogin() {
     socket.emit('user-signin', googleID, nickname)
 }
 function activateAdmin() {
-    adminDiv.style.display = 'block'
-    save.onclick = () => {
-        alert('running admin command: save-to-database')
-        socket.emit('admin:save-to-database')
-    }
-    load.onclick = () => {
-        alert('running admin command: load-from-database')
-        socket.emit('admin:load-from-database')
-    }
+    // adminDiv.style.display = 'block'
 }
 // Comments for forcing changes
 /*
