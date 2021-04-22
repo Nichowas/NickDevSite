@@ -169,27 +169,28 @@ async function onSignIn(googleUser) {
     socket.emit('user-signin', googleID, nickname)
 
     render(Rooms)
-    signInButton.onclick = async () => {
-        google = gapi.auth2.getAuthInstance()
-        await google.disconnect()
-        await google.signOut()
+    signInButton.onclick = () => signOut(google = gapi.auth2.getAuthInstance())
+}
+async function signOut(google) {
+    await google.disconnect()
+    await google.signOut()
 
+    signIn.firstChild.firstChild.children[1].display = 'inline-block'
+    signIn.firstChild.style.width = '120px'
 
-        signIn.firstChild.firstChild.children[1].display = 'inline-block'
-        signIn.firstChild.style.width = '120px'
+    nickname = undefined
+    googleID = undefined
+    signInImg.style.display = 'none'
 
-        nickname = undefined
-        signInImg.style.display = 'none'
+    signInName.style.display = 'none'
+    signInName.innerHTML = ''
 
-        signInName.style.display = 'none'
-        signInName.innerHTML = ''
+    signIn.style.display = 'inline-block'
+    signInButton.style.display = 'none'
 
-        signIn.style.display = 'inline-block'
-        signInButton.style.display = 'none'
-
-        socket.emit('leave')
-        render(Rooms)
-    }
+    admin.style.display = 'none'
+    socket.emit('leave', undefined, 0)
+    render(Rooms)
 }
 
 function resetGame(turn) {
