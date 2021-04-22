@@ -1,29 +1,95 @@
 const port = 'https://nickdevserver.herokuapp.com/';
 // const port = 'http://localhost:3000';
 var socket = io.connect(port);
-var game = new Game(
-    new Pawn(0, 6), new Pawn(1, 6), new Pawn(2, 6), new Pawn(3, 6),
-    new Pawn(4, 6), new Pawn(5, 6), new Pawn(6, 6), new Pawn(7, 6),
-    new Rook(0, 7), new Rook(7, 7),
-    new Bishop(2, 7), new Bishop(5, 7),
-    new Knight(1, 7), new Knight(6, 7),
-    new Queen(3, 7), new King(4, 7),
 
-    new Pawn(0, 1), new Pawn(1, 1), new Pawn(2, 1), new Pawn(3, 1),
-    new Pawn(4, 1), new Pawn(5, 1), new Pawn(6, 1), new Pawn(7, 1),
-    new Rook(0, 0), new Rook(7, 0),
-    new Bishop(2, 0), new Bishop(5, 0),
-    new Knight(1, 0), new Knight(6, 0),
-    new Queen(3, 0), new King(4, 0),
-);
-game.clientTurn = null;
+var winsText = document.getElementById('wins')
+var lossesText = document.getElementById('losses')
+var signIn = document.getElementsByClassName('g-signin2')[0]
+var signInImg = document.getElementById('signin-img')
+var signInName = document.getElementById('signin-p')
+var signInButton = document.getElementById('signin-button')
+var roomsWrapper = document.getElementById('rooms-wrapper')
+var resign = document.getElementById('resign')
+var userdata = document.getElementById('userdata')
 
+var promKnight = document.getElementById('promotion')
+var promKnight = document.getElementById('promotion-knight')
+var promBishop = document.getElementById('promotion-bishop')
+var promRook = document.getElementById('promotion-rook')
+var promQueen = document.getElementById('promotion-queen')
+
+var game;
+var wins = 0, losses = 0;
+var connected, nickname, googleID;
+var Rooms = [];
+
+socket.on('rooms', (rooms) => {
+    Rooms = rooms
+    render(rooms)
+})
+socket.on('user-signin', (w, l) => {
+    wins = w; losses = l
+    winsText.innerHTML = `WINS:   ${wins}`
+    lossesText.innerHTML = `LOSSES: ${losses}`
+})
+socket.on('join', (r, turn) => {
+    connected = r
+
+    resetGame(turn)
+})
+socket.on('ready', () => {
+    game.moveMade = function (p, x, y) {
+        socket.emit('update', {
+            piece: p.rid, x, y,
+            check: false, turn: game.clientTurn.label,
+            promotion: game.chosenPromotion
+        })
+    }
+    game.checkMate = function (p, x, y) {
+        socket.emit('game-end', {
+            piece: p.rid, x, y,
+            check: true, turn: game.clientTurn.label,
+            promotion: game.chosenPromotion
+        }, 1)
+    }
+    game.checkMade = function (p, x, y) {
+        socket.emit('update', {
+            piece: p.rid, x, y,
+            check: true, turn: game.clientTurn.label,
+            promotion: game.chosenPromotion
+        })
+    }
+    game.promotionMade = function (p) {
+        game.allowMove = false
+        promotion.style.display = 'block'
+        promKnight.src = `PieceImages/${p.player.label}-knight.svg`
+        promBishop.src = `PieceImages/${p.player.label}-bishop.svg`
+        promRook.src = `PieceImages/${p.player.label}-rook.svg`
+        promQueen.src = `PieceImages/${p.player.label}-queen.svg`
+
+        promKnight.onclick = () => { game.onPromote(Knight); }
+        promBishop.onclick = () => { game.onPromote(Bishop); }
+        promRook.onclick = () => { game.onPromote(Rook); }
+        promQueen.onclick = () => { game.onPromote(Queen); }
+
+        return () => { game.allowMove = true; promotion.style.display = 'none'; }
+    }
+    game.allowMove = true
+    resign.style.display = 'block'
+})
 socket.on('update', (data) => {
-    let { piece: id, x, y, check } = data
+    data = data[data.length - 1]
+
+    let { piece: id, x, y, check, promotion: cp } = data
     let p = game.pieces[id]
 
     game.addMoveTrail(p.x, p.y, x, y)
     p.makeMove(x, y, true)
+
+    if (cp) {
+        p = p.promote({ knight: Knight, bishop: Bishop, rook: Rook, queen: Queen }[cp], x, y)
+        game.prom = false
+    }
     p.render()
 
     game.serverTurn.king.div.className = game.serverTurn.king.class
@@ -33,103 +99,46 @@ socket.on('update', (data) => {
         game.serverTurn.king.div.className = game.serverTurn.king.class + ' check'
     else
         game.serverTurn.king.div.className = game.serverTurn.king.class
-
-
-
 })
-socket.on('ready', (i) => {
-    game.setTurn(i)
-    game.moveMade = function (p, x, y) {
-        socket.emit('update', { piece: p.rid, x, y, check: false })
-    }
-    game.checkMate = function (p, x, y) {
-        socket.emit('game-end', { piece: p.rid, x, y }, 1)
-    }
-    game.checkMade = function (p, x, y) {
-        socket.emit('update', { piece: p.rid, x, y, check: true })
-    }
-
-    resign.style.display = 'block'
-    // socket.emit('update', p1)
-})
-socket.on('soft-leave', () => {
-    game.removeHighlights()
-    game.clientTurn = null;
-    resign.style.display = 'none'
-})
-socket.on('hard-leave', () => {
+socket.on('leave', () => {
     game.removeHighlights()
     connected = undefined;
-    game.clientTurn = null;
+    game.allowMove = null;
     resign.style.display = 'none'
 })
-var winsText = document.getElementById('wins')
-var lossesText = document.getElementById('losses')
-var wins = 0, losses = 0
-winsText.innerHTML = `WINS:   ${wins}`
-lossesText.innerHTML = `LOSSES: ${losses}`
-
 socket.on('game-end', (data, w, l) => {
     wins = w; losses = l
     winsText.innerHTML = `WINS:   ${wins}`
     lossesText.innerHTML = `LOSSES: ${losses}`
 
-
-
-    if (data) {
-        let { piece: id, x, y } = data
+    let lost = data && data.turn !== game.clientTurn.label
+    if (lost) {
+        let { piece: id, x, y, check, promotion: cp } = data
         let p = game.pieces[id]
         game.addMoveTrail(p.x, p.y, x, y)
 
         p.makeMove(x, y, true)
+        if (cp) {
+            p = p.promote({ knight: Knight, bishop: Bishop, rook: Rook, queen: Queen }[cp], x, y)
+            game.prom = false
+        }
         p.render()
     }
     game.removeHighlights()
+    game.allowMove = false
     connected = undefined;
-    game.clientTurn = null;
 
     resign.style.display = 'none'
     socket.emit('game-end2')
+
+    if (lost) {
+        game.serverTurn.king.div.className = game.serverTurn.king.class
+        if (check)
+            game.clientTurn.king.div.className = game.clientTurn.king.class + ' check'
+        else
+            game.clientTurn.king.div.className = game.clientTurn.king.class
+    }
 })
-
-
-
-var connected;
-socket.on('join', (r) => {
-    connected = r
-
-    game = new Game(
-        new Pawn(0, 6), new Pawn(1, 6), new Pawn(2, 6), new Pawn(3, 6),
-        new Pawn(4, 6), new Pawn(5, 6), new Pawn(6, 6), new Pawn(7, 6),
-        new Rook(0, 7), new Rook(7, 7),
-        new Bishop(2, 7), new Bishop(5, 7),
-        new Knight(1, 7), new Knight(6, 7),
-        new Queen(3, 7), new King(4, 7),
-
-        new Pawn(0, 1), new Pawn(1, 1), new Pawn(2, 1), new Pawn(3, 1),
-        new Pawn(4, 1), new Pawn(5, 1), new Pawn(6, 1), new Pawn(7, 1),
-        new Rook(0, 0), new Rook(7, 0),
-        new Bishop(2, 0), new Bishop(5, 0),
-        new Knight(1, 0), new Knight(6, 0),
-        new Queen(3, 0), new King(4, 0),
-    );
-    game.clientTurn = null;
-})
-socket.on('user-signin', (w, l) => {
-    wins = w; losses = l
-    winsText.innerHTML = `WINS:   ${wins}`
-    lossesText.innerHTML = `LOSSES: ${losses}`
-})
-var signIn = document.getElementsByClassName('g-signin2')[0]
-var signInImg = document.getElementById('signin-img')
-var signInName = document.getElementById('signin-p')
-var signInButton = document.getElementById('signin-button')
-
-var nickname;
-
-const clientID = "894823189716 - ccnva78uf040snt722ah99culli84b12.apps.googleusercontent.com"
-var googleID;
-
 
 async function onSignIn(googleUser) {
     googleID = googleUser.getId()
@@ -172,11 +181,47 @@ async function onSignIn(googleUser) {
         render(Rooms)
     }
 }
+
+function resetGame(turn) {
+    game = new Game(
+        new Pawn(0, 6), new Pawn(1, 6), new Pawn(2, 6), new Pawn(3, 6),
+        new Pawn(4, 6), new Pawn(5, 6), new Pawn(6, 6), new Pawn(7, 6),
+        new Rook(0, 7), new Rook(7, 7),
+        new Bishop(2, 7), new Bishop(5, 7),
+        new Knight(1, 7), new Knight(6, 7),
+        new Queen(3, 7), new King(4, 7),
+
+        new Pawn(0, 1), new Pawn(1, 1), new Pawn(2, 1), new Pawn(3, 1),
+        new Pawn(4, 1), new Pawn(5, 1), new Pawn(6, 1), new Pawn(7, 1),
+        new Rook(0, 0), new Rook(7, 0),
+        new Bishop(2, 0), new Bishop(5, 0),
+        new Knight(1, 0), new Knight(6, 0),
+        new Queen(3, 0), new King(4, 0),
+    );
+    game.setTurn(turn)
+}
+
+function joinGame(clients, i) {
+    return (() => {
+        if (nickname !== undefined && (connected == i || clients.length < 2)) {
+            if (connected === undefined || connected != i)
+                socket.emit('join', i)
+            else
+                socket.emit('leave')
+        }
+    })
+}
+function newGame() {
+    return (() => {
+        if (nickname !== undefined)
+            socket.emit('join')
+    })
+}
+
 function clientDiv(c) {
     let div = document.createElement('div')
     div.className = 'room-client'
     div.innerHTML = c.name
-
     return div
 }
 function roomDiv(r, i, ...clients) {
@@ -198,24 +243,10 @@ function roomDiv(r, i, ...clients) {
     if (nickname !== undefined && (connected == i || clients.length < 2))
         button.className += ' able'
 
-    button.addEventListener('click', () => {
-        if (nickname !== undefined && (connected == i || clients.length < 2)) {
-            if (connected === undefined || connected != i)
-                socket.emit('join', i)
-            else
-                socket.emit('leave')
-        }
-    })
+    button.onclick = joinGame(clients, i)
     div.appendChild(button)
     return div
 }
-var roomsWrapper = document.getElementById('rooms-wrapper')
-
-var Rooms = []
-socket.on('rooms', (rooms) => {
-    Rooms = rooms
-    render(rooms)
-})
 function render(rooms) {
     while (roomsWrapper.firstChild) {
         roomsWrapper.removeChild(roomsWrapper.firstChild);
@@ -230,18 +261,18 @@ function render(rooms) {
     if (nickname !== undefined)
         button.className += ' able'
     button.innerHTML = '<div></div><div></div>'
-    button.onclick = () => { if (nickname !== undefined) socket.emit('join') }
+    button.onclick = newGame()
     roomsWrapper.appendChild(button)
 }
-render()
 
-var resign = document.getElementById('resign')
-var userdata = document.getElementById('userdata')
+winsText.innerHTML = `WINS:   ${wins}`
+lossesText.innerHTML = `LOSSES: ${losses}`
 
 resign.style.display = 'none'
-resign.addEventListener('click', () => {
-    socket.emit('game-end', undefined, 2)
-})
+resign.onclick = () => socket.emit('game-end', undefined, 2)
+
+render()
+
 // Comments for forcing changes
 /*
     CHANGE COUNT: 2

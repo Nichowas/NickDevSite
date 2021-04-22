@@ -46,7 +46,7 @@
     display: inline-block;
     position: relative;
     bottom: 160px;
-    width: calc(200px - 10px - 20px);
+    width: calc(230px - 10px - 20px);
     height: calc(360px - 10px - 20px);
     margin-left: 10px;
     background-color: #421;
@@ -92,34 +92,52 @@
 #losses {
     float: right
 }
+#promotion {
+    display: none;
+    width: calc(4 * 40px + 3 * 10px);
+    height: 40px;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0px -5px #221108
+}
+#promotion > img {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+#promotion > img:last-child {
+    margin-right: 0;
+}
+
 .highlight {
     position: absolute;
     width: 40px;
     height: 40px;
     background-color: #f00a;
     cursor: pointer;
+    z-index: 2;
 }
 .highlight-move {
-    position: absolute;
-    width: 40px;
-    height: 40px;
+    z-index: 0;
     background-color: #f0f2;
-    cursor: pointer;
 }
 
 .piece {
+    z-index: 1;
+
     position: absolute;
     width: 40px;
     height: 40px;
     font-size: 40px;
     user-select: none;
     display: none;
-}
-.piece.check { background-color: #f007;}
-
-.piece:hover {
     cursor: pointer;
 }
+.piece.check { background-color: #f007;}
 
 #sign-in {
     width: max-content;

@@ -28,10 +28,15 @@ class Game {
 
         this.passant = null;
         let i = 0
-        this.pieces.forEach(p => { p.init(this, i < 16 ? this.White : this.Black, i); i++ })
+        this.pieces.forEach(p => { if (p) p.init(this, i < 16 ? this.White : this.Black, i); i++ })
         this.wgraveyard = []
         this.bgraveyard = []
         this.renderGraveyard()
+
+        let highlights = document.getElementsByClassName('highlight')
+        while (highlights.length > 0) board.removeChild(highlights[0])
+
+        this.prom = false
     }
     renderGraveyard() {
 
@@ -62,7 +67,7 @@ class Game {
         }
     }
     setTurn(cturn) {
-        this.clientTurn = cturn ? this.Black : this.White;
+        this.clientTurn = cturn === 'black' ? this.Black : this.White;
     }
     removeHighlights() {
         if (this.highlight)
@@ -121,13 +126,13 @@ class Game {
         if (this.toHighlight) board.removeChild(this.toHighlight)
 
         let fromHighlight = document.createElement('div')
-        fromHighlight.className = 'highlight-move';
+        fromHighlight.className = 'highlight highlight-move';
         let [l, t] = this.position(x, y)
         fromHighlight.style.left = l + 'px'
         fromHighlight.style.top = t + 'px'
 
         let toHighlight = document.createElement('div')
-        toHighlight.className = 'highlight-move';
+        toHighlight.className = 'highlight highlight-move';
         [l, t] = this.position(mx, my)
         toHighlight.style.left = l + 'px'
         toHighlight.style.top = t + 'px'
@@ -189,7 +194,7 @@ class Piece {
     }
     onclick(e) {
         this.game.removeHighlights()
-        if (this.game.clientTurn !== this.game.serverTurn || this.game.clientTurn !== this.player) return
+        if (!this.game.allowMove || this.game.clientTurn !== this.game.serverTurn || this.game.clientTurn !== this.player) return
 
         let moves = this.getMoves(), h = []
         for (let i = 0; i < moves.length; i++) {
@@ -214,7 +219,28 @@ class Piece {
 
         this.game.removeHighlights()
         this.makeMove(...m, true)
+        this.moveOnClick2(m, this.game.prom)
+    }
+    moveOnClick2(m, prom = false) {
         this.render()
+        if (prom) {
+            let promCall
+            this.div.onclick = () => { }
+            if (this.game.promotionMade) promCall = this.game.promotionMade(this)
+
+            this.game.onPromote = (type) => {
+                this.game.chosenPromotion = type.name.toLowerCase()
+                let promPiece = this.promote(type, ...m);
+                promCall()
+
+                promPiece.moveOnClick2(m)
+                this.game.prom = false
+            }
+            return
+        }
+        if (!this.game.prom)
+            this.game.chosenPromotion = null
+
         this.div.onclick = (e) => this.onclick(e)
 
         this.game.serverTurn = this.game.clientTurn.not
@@ -237,11 +263,15 @@ class Piece {
                 break
 
             case 2: // stalemate
+                this.game.serverTurn.king.div.className = this.game.serverTurn.king.class
+                this.game.clientTurn.king.div.className = this.game.clientTurn.king.class
                 if (this.game.checkMate)
                     this.game.checkMate(this, ...m)
                 break
 
             case 3: // checkmate
+                this.game.serverTurn.king.div.className = this.game.serverTurn.king.class + ' check'
+                this.game.clientTurn.king.div.className = this.game.clientTurn.king.class
                 if (this.game.checkMate)
                     this.game.checkMate(this, ...m)
                 break
@@ -445,8 +475,8 @@ class Knight extends Piece {
     }
 }
 class Pawn extends Piece {
-    constructor(x, y, player) {
-        super(x, y, player)
+    constructor(x, y) {
+        super(x, y)
         this.first = true
     }
     makeMove(x, y, fr = false) {
@@ -466,6 +496,9 @@ class Pawn extends Piece {
                 this.game.passant = this
             } else {
                 this.game.passant = null
+            }
+            if (y === 0 || y === 7) {
+                this.game.prom = true
             }
         }
 
@@ -507,6 +540,14 @@ class Pawn extends Piece {
         if (illegalCheck) moves = moves.filter(m => !this.game.illegal(this, ...m))
 
         return moves
+    }
+    promote(type, x, y) {
+        let rid = this.rid, g = this.game
+        this.div.className = `piece ${this.player.label} ${type.name.toLowerCase()}`
+        let prom = new type(x, y)
+        g.pieces[rid] = prom
+        prom.init(g, this.player, rid)
+        return prom
     }
 }
 class King extends Piece {
