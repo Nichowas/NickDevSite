@@ -2,21 +2,29 @@ const port = 'https://nickdevserver.herokuapp.com/';
 // const port = 'http://localhost:3000';
 var socket = io.connect(port);
 
-var winsText = document.getElementById('wins')
-var lossesText = document.getElementById('losses')
 var signIn = document.getElementsByClassName('g-signin2')[0]
 var signInImg = document.getElementById('signin-img')
 var signInName = document.getElementById('signin-p')
 var signInButton = document.getElementById('signin-button')
+
 var roomsWrapper = document.getElementById('rooms-wrapper')
-var resign = document.getElementById('resign')
+
 var userdata = document.getElementById('userdata')
+var winsText = document.getElementById('wins')
+var lossesText = document.getElementById('losses')
+
+var resign = document.getElementById('resign')
 
 var promKnight = document.getElementById('promotion')
 var promKnight = document.getElementById('promotion-knight')
 var promBishop = document.getElementById('promotion-bishop')
 var promRook = document.getElementById('promotion-rook')
 var promQueen = document.getElementById('promotion-queen')
+
+var adminDiv = document.getElementById('admin')
+var adminSave = document.getElementById('save')
+
+
 
 var game;
 var wins = 0, losses = 0;
@@ -140,8 +148,10 @@ socket.on('game-end', (data, w, l) => {
     }
 })
 
+var admin = false
 async function onSignIn(googleUser) {
     googleID = googleUser.getId()
+    if (googleID === "108301415116633767500") { admin = true; activateAdmin() }
     signIn.firstChild.firstChild.children[1].display = 'none'
     signIn.firstChild.style.width = '36px'
 
@@ -273,6 +283,23 @@ resign.onclick = () => socket.emit('game-end', undefined, 2)
 
 render()
 
+
+function guestLogin() {
+    nickname = 'guest'
+    googleID = '0'
+    socket.emit('user-signin', googleID, nickname)
+}
+function activateAdmin() {
+    adminDiv.style.display = 'block'
+    save.onclick = () => {
+        alert('running admin command: save-to-database')
+        socket.emit('admin:save-to-database')
+    }
+    load.onclick = () => {
+        alert('running admin command: load-from-database')
+        socket.emit('admin:load-from-database')
+    }
+}
 // Comments for forcing changes
 /*
     CHANGE COUNT: 2

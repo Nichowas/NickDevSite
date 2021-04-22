@@ -275,3 +275,36 @@
     height: 20px !important;
 }
 
+#admin {
+    width: 540px;
+    height: 50px;
+    padding: 10px;
+    background-color: #111;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: none;
+    color: #fff;
+}
+#admin > * {
+    display: inline-block;
+}
+#admin > span {
+    font-size: 15px;
+    position: relative;
+    bottom: 20px;
+    margin-left: 5px;
+    margin-right: 10px;
+
+}
+#save, #load {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border: solid 5px #000;
+    background-color: #322;
+    border-radius: 50%;
+}
+#save:hover, #load:hover {
+    border-radius: 40%;
+    background-color: #f33;
+}
