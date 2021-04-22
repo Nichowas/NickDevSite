@@ -21,8 +21,6 @@ var promBishop = document.getElementById('promotion-bishop')
 var promRook = document.getElementById('promotion-rook')
 var promQueen = document.getElementById('promotion-queen')
 
-var adminDiv = document.getElementById('admin')
-
 var game;
 var wins = 0, losses = 0;
 var connected, nickname, googleID;
@@ -145,10 +143,8 @@ socket.on('game-end', (data, w, l) => {
     }
 })
 
-var admin = false
 async function onSignIn(googleUser) {
     googleID = googleUser.getId()
-    if (googleID === "108301415116633767500") { admin = true; activateAdmin() }
     signIn.firstChild.firstChild.children[1].display = 'none'
     signIn.firstChild.style.width = '36px'
 
@@ -185,7 +181,6 @@ async function signOut(google) {
     signIn.style.display = 'inline-block'
     signInButton.style.display = 'none'
 
-    admin.style.display = 'none'
     socket.emit('leave', undefined, 0)
     render(Rooms)
 }
@@ -287,9 +282,7 @@ function guestLogin() {
     googleID = '0'
     socket.emit('user-signin', googleID, nickname)
 }
-function activateAdmin() {
-    // adminDiv.style.display = 'block'
-}
+
 // Comments for forcing changes
 /*
     CHANGE COUNT: 2
