@@ -1,5 +1,5 @@
 TODO:
-- Promotion
 - Spectator Mode
-- Database (MongoDB)
-- User Data
+- Leaderboard
+- Guest Login
+- UserData -> client
