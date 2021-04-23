@@ -1,5 +1,5 @@
-// const port = 'https://nickdevserver.herokuapp.com/';
-const port = 'http://localhost:3000';
+const port = 'https://nickdevserver.herokuapp.com/';
+// const port = 'http://localhost:3000';
 var socket = io.connect(port);
 
 var signIn = document.getElementsByClassName('g-signin2')[0]
