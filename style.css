@@ -54,7 +54,6 @@ html {--size: 560px}
     border: 5px solid #221108;
     padding: 10px;
     vertical-align: middle;
-
 }
 #resign {
     background-color: #fff;
@@ -283,3 +282,31 @@ html {--size: 560px}
     height: 20px !important;
 }
 
+#online-users {
+    width: var(--size);
+}
+#divider {
+    width: var(--size);
+    height: 5px;
+    background-color: #eee;
+    margin-bottom: 10px;
+}
+.user {
+    height: 30px;
+    background-color: #eee;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+.user-img{
+    height: 26px;
+    width: 26px;
+    border: solid 2px #aaa; 
+    border-radius: 50%;
+}
+.user > span {
+    position: relative;
+    font-size: 20px;
+    margin-left: 10px;
+    bottom: 7px;
+}

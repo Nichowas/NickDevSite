@@ -7,7 +7,7 @@ var signInImg = document.getElementById('signin-img')
 var signInName = document.getElementById('signin-p')
 var signInButton = document.getElementById('signin-button')
 
-var roomsWrapper = document.getElementById('rooms-wrapper')
+var roomsWrapper = document.getElementById('rooms')
 
 var userdata = document.getElementById('userdata')
 var winsText = document.getElementById('wins')
@@ -21,17 +21,21 @@ var promBishop = document.getElementById('promotion-bishop')
 var promRook = document.getElementById('promotion-rook')
 var promQueen = document.getElementById('promotion-queen')
 
+var usersWrapper = document.getElementById('online-users')
+
 var game;
 var wins = 0, losses = 0;
-var connected, nickname = 'guest', googleID;
-var Rooms = [];
+var connected, nickname = 'guest', googleID, imageSrc;
+var Rooms = [], Users = [];
 
 socket.on('start', () => {
     socket.on('rooms', (rooms) => {
         Rooms = rooms
-        render(rooms)
+        render(rooms, Users)
     })
-    socket.on('user-signin', (w, l) => {
+    socket.on('user-signin', (users, w, l) => {
+        Users = users
+        render(Rooms, users)
         wins = w; losses = l
         winsText.innerHTML = `WINS:   ${wins}`
         lossesText.innerHTML = `LOSSES: ${losses}`
@@ -153,7 +157,6 @@ socket.on('start', () => {
     socket.emit('guest-signin')
 })
 
-
 async function onSignIn(googleUser) {
     googleID = googleUser.getId()
     signIn.firstChild.firstChild.children[1].display = 'none'
@@ -161,7 +164,9 @@ async function onSignIn(googleUser) {
 
     var profile = googleUser.getBasicProfile();
     // signIn.style.display = 'none'
-    signInImg.src = profile.getImageUrl()
+    imageSrc = profile.getImageUrl()
+
+    signInImg.src = imageSrc
     signInImg.style.display = 'inline-block'
 
     nickname = profile.getName()
@@ -170,11 +175,11 @@ async function onSignIn(googleUser) {
 
     // signIn.style.display = 'none'
     signInButton.style.display = 'inline-block'
-    socket.emit('user-signin', googleID, nickname)
+    socket.emit('user-signin', googleID, nickname, imageSrc)
 
     userdata.style.display = 'block'
 
-    render(Rooms)
+    render(Rooms, Users)
     signInButton.onclick = () => signOut(google = gapi.auth2.getAuthInstance())
 }
 async function signOut(google) {
@@ -197,7 +202,7 @@ async function signOut(google) {
     signInButton.style.display = 'none'
 
     socket.emit('user-signout')
-    render(Rooms)
+    render(Rooms, Users)
 }
 
 function resetGame(turn) {
@@ -265,22 +270,29 @@ function roomDiv(r, i, ...clients) {
     div.appendChild(button)
     return div
 }
-function render(rooms) {
-    while (roomsWrapper.firstChild) {
-        roomsWrapper.removeChild(roomsWrapper.firstChild);
-    }
 
-    for (let i in rooms)
-        roomsWrapper.appendChild(roomDiv(`Game #${i}`, i, ...rooms[i]))
+function userDiv(u) {
+    let div = document.createElement('div')
+    div.className = 'user'
 
-    let button = document.createElement('div')
-    button.id = 'new-game'
-    button.className = 'game'
-    if (nickname !== undefined)
-        button.className += ' able'
-    button.innerHTML = '<div></div><div></div>'
-    button.onclick = newGame()
-    roomsWrapper.appendChild(button)
+    div.innerHTML = `<img src = ${u.src} class = "user-img"><span>${u.name}</span>`
+
+    return div
+}
+
+function render(rooms = [], users = []) {
+    while (roomsWrapper.firstChild) { roomsWrapper.removeChild(roomsWrapper.firstChild); }
+    while (usersWrapper.firstChild) { usersWrapper.removeChild(usersWrapper.firstChild); }
+
+    for (let i in rooms) roomsWrapper.appendChild(roomDiv(`Game #${i}`, i, ...rooms[i]))
+
+    let nbutton = document.createElement('div')
+    nbutton.innerHTML = '<div></div><div></div>'; nbutton.onclick = newGame()
+    nbutton.id = 'new-game'; nbutton.className = `game ${nickname === undefined ? '' : 'able'}`
+    roomsWrapper.appendChild(nbutton)
+
+
+    for (let i in users) usersWrapper.appendChild(userDiv(users[i]))
 }
 
 // winsText.innerHTML = `WINS:   ${wins}`
