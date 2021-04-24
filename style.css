@@ -1,3 +1,4 @@
+html {--size: 560px}
 #container {
     font-size: 0;
     height: 320px;
@@ -76,6 +77,9 @@
     height: 20px;
     margin-right: 10px;
 }
+#userdata {
+    display: none;
+}
 #score {
     font-size: 15px;
     height: 20px;
@@ -84,7 +88,7 @@
     padding: 5px;
     margin-top: 5px;
     margin-bottom: 10px;
-    box-shadow: 0px -5px #221108
+    box-shadow: 0px -5px #221108;
 }
 #wins {
     float: left;
@@ -141,7 +145,7 @@
 
 #sign-in {
     width: max-content;
-    min-width: 510px;
+    min-width: calc(var(--size) - 20px);
     height: 36px;
     margin-bottom: 10px;
     background-color: #eee;
@@ -155,6 +159,7 @@
     height: 36px;
     margin-right: 10px;
     border-radius: 50%;
+    background-color: #fff;
     display: none;
 }
 #signin-p {
@@ -164,9 +169,8 @@
 
     margin-right: 10px;
     font-size: 19px;
-    display: none;
-
     vertical-align: top;
+    display: none;
 }
 .g-signin2 {
     float: right;
@@ -206,18 +210,22 @@
 }
 .room {
     background-color: #eee;
-    width: 510px;
+    width: calc(var(--size) - 20px);
     padding: 10px;
     margin-bottom: 10px;
+
+    border-radius: 10px;
 }
 .room-client {
     background-color: #ddd;
     padding: 10px;
-    width: 480px;
+    width: calc(var(--size) - 50px);
     
     margin-top: 3px;
     margin-bottom: 3px;
     margin-left: 10px;
+
+    border-radius: 10px;
 }
 
 .game {
@@ -275,36 +283,3 @@
     height: 20px !important;
 }
 
-#admin {
-    width: 540px;
-    height: 50px;
-    padding: 10px;
-    background-color: #111;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    display: none;
-    color: #fff;
-}
-#admin > * {
-    display: inline-block;
-}
-#admin > span {
-    font-size: 15px;
-    position: relative;
-    bottom: 20px;
-    margin-left: 5px;
-    margin-right: 10px;
-
-}
-#save, #load {
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    border: solid 5px #000;
-    background-color: #322;
-    border-radius: 50%;
-}
-#save:hover, #load:hover {
-    border-radius: 40%;
-    background-color: #f33;
-}

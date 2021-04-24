@@ -1,5 +1,4 @@
 TODO:
 - Spectator Mode
 - Leaderboard
-- Guest Login
 - UserData -> client

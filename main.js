@@ -23,125 +23,136 @@ var promQueen = document.getElementById('promotion-queen')
 
 var game;
 var wins = 0, losses = 0;
-var connected, nickname, googleID;
+var connected, nickname = 'guest', googleID;
 var Rooms = [];
 
-socket.on('rooms', (rooms) => {
-    Rooms = rooms
-    render(rooms)
-})
-socket.on('user-signin', (w, l) => {
-    wins = w; losses = l
-    winsText.innerHTML = `WINS:   ${wins}`
-    lossesText.innerHTML = `LOSSES: ${losses}`
-})
-socket.on('join', (r, turn) => {
-    connected = r
+socket.on('start', () => {
+    socket.on('rooms', (rooms) => {
+        Rooms = rooms
+        render(rooms)
+    })
+    socket.on('user-signin', (w, l) => {
+        wins = w; losses = l
+        winsText.innerHTML = `WINS:   ${wins}`
+        lossesText.innerHTML = `LOSSES: ${losses}`
+    })
+    socket.on('join', (r, turn) => {
+        connected = r
 
-    resetGame(turn)
-})
-socket.on('ready', () => {
-    game.moveMade = function (p, x, y) {
-        socket.emit('update', {
-            piece: p.rid, x, y,
-            check: false, turn: game.clientTurn.label,
-            promotion: game.chosenPromotion
-        })
-    }
-    game.checkMate = function (p, x, y) {
-        socket.emit('game-end', {
-            piece: p.rid, x, y,
-            check: true, turn: game.clientTurn.label,
-            promotion: game.chosenPromotion
-        }, 1)
-    }
-    game.checkMade = function (p, x, y) {
-        socket.emit('update', {
-            piece: p.rid, x, y,
-            check: true, turn: game.clientTurn.label,
-            promotion: game.chosenPromotion
-        })
-    }
-    game.promotionMade = function (p) {
-        game.allowMove = false
-        promotion.style.display = 'block'
-        promKnight.src = `PieceImages/${p.player.label}-knight.svg`
-        promBishop.src = `PieceImages/${p.player.label}-bishop.svg`
-        promRook.src = `PieceImages/${p.player.label}-rook.svg`
-        promQueen.src = `PieceImages/${p.player.label}-queen.svg`
+        resetGame(turn)
+    })
+    socket.on('ready', () => {
+        game.moveMade = function (p, x, y) {
+            socket.emit('update', {
+                piece: p.rid, x, y,
+                check: false, turn: game.clientTurn.label,
+                promotion: game.chosenPromotion
+            })
+        }
+        game.checkMate = function (p, x, y) {
+            socket.emit('game-end', {
+                piece: p.rid, x, y,
+                check: true, turn: game.clientTurn.label,
+                promotion: game.chosenPromotion
+            }, 1)
+        }
+        game.checkMade = function (p, x, y) {
+            socket.emit('update', {
+                piece: p.rid, x, y,
+                check: true, turn: game.clientTurn.label,
+                promotion: game.chosenPromotion
+            })
+        }
+        game.promotionMade = function (p) {
+            game.allowMove = false
+            promotion.style.display = 'block'
+            promKnight.src = `PieceImages/${p.player.label}-knight.svg`
+            promBishop.src = `PieceImages/${p.player.label}-bishop.svg`
+            promRook.src = `PieceImages/${p.player.label}-rook.svg`
+            promQueen.src = `PieceImages/${p.player.label}-queen.svg`
 
-        promKnight.onclick = () => { game.onPromote(Knight); }
-        promBishop.onclick = () => { game.onPromote(Bishop); }
-        promRook.onclick = () => { game.onPromote(Rook); }
-        promQueen.onclick = () => { game.onPromote(Queen); }
+            promKnight.onclick = () => { game.onPromote(Knight); }
+            promBishop.onclick = () => { game.onPromote(Bishop); }
+            promRook.onclick = () => { game.onPromote(Rook); }
+            promQueen.onclick = () => { game.onPromote(Queen); }
 
-        return () => { game.allowMove = true; promotion.style.display = 'none'; }
-    }
-    game.allowMove = true
-    resign.style.display = 'block'
-})
-socket.on('update', (data) => {
-    data = data[data.length - 1]
+            return () => { game.allowMove = true; promotion.style.display = 'none'; }
+        }
+        game.allowMove = true
+        resign.style.display = 'block'
+    })
+    socket.on('update', (data) => {
+        data = data[data.length - 1]
 
-    let { piece: id, x, y, check, promotion: cp } = data
-    let p = game.pieces[id]
-
-    game.addMoveTrail(p.x, p.y, x, y)
-    p.makeMove(x, y, true)
-
-    if (cp) {
-        p = p.promote({ knight: Knight, bishop: Bishop, rook: Rook, queen: Queen }[cp], x, y)
-        game.prom = false
-    }
-    p.render()
-
-    game.serverTurn.king.div.className = game.serverTurn.king.class
-    game.serverTurn = game.clientTurn
-
-    if (check)
-        game.serverTurn.king.div.className = game.serverTurn.king.class + ' check'
-    else
-        game.serverTurn.king.div.className = game.serverTurn.king.class
-})
-socket.on('leave', () => {
-    game.removeHighlights()
-    connected = undefined;
-    game.allowMove = null;
-    resign.style.display = 'none'
-})
-socket.on('game-end', (data, w, l) => {
-    wins = w; losses = l
-    winsText.innerHTML = `WINS:   ${wins}`
-    lossesText.innerHTML = `LOSSES: ${losses}`
-
-    let lost = data && data.turn !== game.clientTurn.label
-    if (lost) {
         let { piece: id, x, y, check, promotion: cp } = data
         let p = game.pieces[id]
-        game.addMoveTrail(p.x, p.y, x, y)
 
+        game.addMoveTrail(p.x, p.y, x, y)
         p.makeMove(x, y, true)
+
         if (cp) {
             p = p.promote({ knight: Knight, bishop: Bishop, rook: Rook, queen: Queen }[cp], x, y)
             game.prom = false
         }
         p.render()
-    }
-    game.removeHighlights()
-    game.allowMove = false
-    connected = undefined;
 
-    resign.style.display = 'none'
-    socket.emit('game-end2')
-
-    if (lost) {
         game.serverTurn.king.div.className = game.serverTurn.king.class
+        game.serverTurn = game.clientTurn
+
         if (check)
-            game.clientTurn.king.div.className = game.clientTurn.king.class + ' check'
+            game.serverTurn.king.div.className = game.serverTurn.king.class + ' check'
         else
-            game.clientTurn.king.div.className = game.clientTurn.king.class
-    }
+            game.serverTurn.king.div.className = game.serverTurn.king.class
+    })
+    socket.on('leave', () => {
+        game.removeHighlights()
+        connected = undefined;
+        game.allowMove = null;
+        resign.style.display = 'none'
+    })
+    socket.on('game-end', (data, w, l) => {
+        wins = w; losses = l
+        winsText.innerHTML = `WINS:   ${wins}`
+        lossesText.innerHTML = `LOSSES: ${losses}`
+
+        let lost = data && data.turn !== game.clientTurn.label
+        if (lost) {
+            let { piece: id, x, y, check, promotion: cp } = data
+            let p = game.pieces[id]
+            game.addMoveTrail(p.x, p.y, x, y)
+
+            p.makeMove(x, y, true)
+            if (cp) {
+                p = p.promote({ knight: Knight, bishop: Bishop, rook: Rook, queen: Queen }[cp], x, y)
+                game.prom = false
+            }
+            p.render()
+        }
+        game.removeHighlights()
+        game.allowMove = false
+        connected = undefined;
+
+        resign.style.display = 'none'
+        socket.emit('game-end2')
+
+        if (lost) {
+            game.serverTurn.king.div.className = game.serverTurn.king.class
+            if (check)
+                game.clientTurn.king.div.className = game.clientTurn.king.class + ' check'
+            else
+                game.clientTurn.king.div.className = game.clientTurn.king.class
+        }
+    })
+    nickname = 'Guest'
+    signInName.style.display = 'inline-block'
+    signInImg.style.display = 'inline-block'
+
+    signInName.innerHTML = 'Playing as GUEST'
+    signInImg.src = 'guest.svg'
+
+    socket.emit('guest-signin')
 })
+
 
 async function onSignIn(googleUser) {
     googleID = googleUser.getId()
@@ -161,6 +172,8 @@ async function onSignIn(googleUser) {
     signInButton.style.display = 'inline-block'
     socket.emit('user-signin', googleID, nickname)
 
+    userdata.style.display = 'block'
+
     render(Rooms)
     signInButton.onclick = () => signOut(google = gapi.auth2.getAuthInstance())
 }
@@ -168,20 +181,22 @@ async function signOut(google) {
     await google.disconnect()
     await google.signOut()
 
+    userdata.style.display = 'none'
+
     signIn.firstChild.firstChild.children[1].display = 'inline-block'
     signIn.firstChild.style.width = '120px'
 
-    nickname = undefined
+    nickname = 'Guest'
     googleID = undefined
     signInImg.style.display = 'none'
 
-    signInName.style.display = 'none'
-    signInName.innerHTML = ''
+    // signInName.style.display = 'none'
+    signInName.innerHTML = 'Playing as GUEST'
 
     signIn.style.display = 'inline-block'
     signInButton.style.display = 'none'
 
-    socket.emit('leave', undefined, 0)
+    socket.emit('user-signout')
     render(Rooms)
 }
 
@@ -268,20 +283,13 @@ function render(rooms) {
     roomsWrapper.appendChild(button)
 }
 
-winsText.innerHTML = `WINS:   ${wins}`
-lossesText.innerHTML = `LOSSES: ${losses}`
+// winsText.innerHTML = `WINS:   ${wins}`
+// lossesText.innerHTML = `LOSSES: ${losses}`
 
 resign.style.display = 'none'
 resign.onclick = () => socket.emit('game-end', undefined, 2)
 
 render()
-
-
-function guestLogin() {
-    nickname = 'guest'
-    googleID = '0'
-    socket.emit('user-signin', googleID, nickname)
-}
 
 // Comments for forcing changes
 /*
