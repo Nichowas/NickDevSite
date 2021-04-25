@@ -30,7 +30,10 @@ var wins = 0, losses = 0;
 var connected, nickname = 'guest', googleID, imageSrc;
 var Rooms = [], Users = [];
 
-socket.on('start', () => {
+socket.on('start', (users) => {
+    Users = users
+    render(Rooms, users)
+
     socket.on('rooms', (rooms) => {
         Rooms = rooms
         render(rooms, Users)
@@ -39,7 +42,7 @@ socket.on('start', () => {
         Users = users
         render(Rooms, users)
     })
-    socket.on('user-signin', (users, w, l) => {
+    socket.on('user-signin', (w, l) => {
         Users = users
         render(Rooms, users)
         wins = w; losses = l
