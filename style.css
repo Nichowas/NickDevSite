@@ -308,5 +308,7 @@ html {--size: 560px}
     position: relative;
     font-size: 20px;
     margin-left: 10px;
-    bottom: 7px;
+    vertical-align: top;
+    top: 3px;
 }
+.user > span:last-child{float: right; }

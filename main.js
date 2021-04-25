@@ -1,5 +1,6 @@
 const port = 'https://nickdevserver.herokuapp.com/';
 // const port = 'http://localhost:3000';
+console.log(window.location.hostname)
 var socket = io.connect(port);
 
 var signIn = document.getElementsByClassName('g-signin2')[0]
@@ -275,7 +276,7 @@ function userDiv(u) {
     let div = document.createElement('div')
     div.className = 'user'
 
-    div.innerHTML = `<img src = ${u.src} class = "user-img"><span>${u.name}</span>`
+    div.innerHTML = `<img src = ${u.src} class = "user-img"><span>${u.name}</span><span>${u.rating}</span>`
 
     return div
 }
