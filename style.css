@@ -297,11 +297,12 @@ html {--size: 560px}
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 10px;
+    box-shadow: 0 5px #ddd;
 }
 .user-img{
-    height: 26px;
-    width: 26px;
-    border: solid 2px #aaa; 
+    height: 24px;
+    width: 24px;
+    border: solid 3px #aaa; 
     border-radius: 50%;
 }
 .user > span {
@@ -312,3 +313,22 @@ html {--size: 560px}
     top: 3px;
 }
 .user > span:last-child{float: right; }
+
+.place-1 {
+    background-color: #fd0;
+    box-shadow: 0 5px #ec0, inset 0px 3px 3px #ff5;
+}
+.place-1 > .user-img { border-color: #a90;}
+
+
+.place-2 {
+    background-color: #ddd;
+    box-shadow: 0 5px #ccc, inset 0px 3px 3px #eee;
+}
+.place-2 > .user-img {border-color: #999;}
+
+.place-3 {
+    background-color: #cd7f32;
+    box-shadow: 0 5px #ad5f12, inset 0px 3px 3px #ed9f52;
+}
+.place-3 > .user-img {border-color: #9d4f02;}

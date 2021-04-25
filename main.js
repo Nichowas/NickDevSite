@@ -35,6 +35,10 @@ socket.on('start', () => {
         Rooms = rooms
         render(rooms, Users)
     })
+    socket.on('users', (users) => {
+        Users = users
+        render(Rooms, users)
+    })
     socket.on('user-signin', (users, w, l) => {
         Users = users
         render(Rooms, users)
@@ -60,7 +64,7 @@ socket.on('start', () => {
                 piece: p.rid, x, y,
                 check: true, turn: game.clientTurn.label,
                 promotion: game.chosenPromotion
-            }, 1)
+            }, 2)
         }
         game.checkMade = function (p, x, y) {
             socket.emit('update', {
@@ -110,12 +114,6 @@ socket.on('start', () => {
         else
             game.serverTurn.king.div.className = game.serverTurn.king.class
     })
-    socket.on('leave', () => {
-        game.removeHighlights()
-        connected = undefined;
-        game.allowMove = null;
-        resign.style.display = 'none'
-    })
     socket.on('game-end', (data, w, l) => {
         wins = w; losses = l
         winsText.innerHTML = `WINS:   ${wins}`
@@ -133,21 +131,17 @@ socket.on('start', () => {
                 game.prom = false
             }
             p.render()
-        }
-        game.removeHighlights()
-        game.allowMove = false
-        connected = undefined;
-
-        resign.style.display = 'none'
-        socket.emit('game-end2')
-
-        if (lost) {
             game.serverTurn.king.div.className = game.serverTurn.king.class
             if (check)
                 game.clientTurn.king.div.className = game.clientTurn.king.class + ' check'
             else
                 game.clientTurn.king.div.className = game.clientTurn.king.class
         }
+        game.removeHighlights()
+        game.allowMove = false
+        connected = undefined;
+
+        resign.style.display = 'none'
     })
     nickname = 'Guest'
     signInName.style.display = 'inline-block'
@@ -273,9 +267,9 @@ function roomDiv(r, i, ...clients) {
     return div
 }
 
-function userDiv(u) {
+function userDiv(u, i) {
     let div = document.createElement('div')
-    div.className = 'user'
+    div.className = `user place-${Number(i) + 1}`
 
     div.innerHTML = `<img src = ${u.src} class = "user-img"><span>${u.name}</span><span>${u.rating}</span>`
 
@@ -286,22 +280,22 @@ function render(rooms = [], users = []) {
     while (roomsWrapper.firstChild) { roomsWrapper.removeChild(roomsWrapper.firstChild); }
     while (usersWrapper.firstChild) { usersWrapper.removeChild(usersWrapper.firstChild); }
 
-    for (let i in rooms) roomsWrapper.appendChild(roomDiv(`Game #${i}`, i, ...rooms[i]))
+    for (let i in rooms) roomsWrapper.appendChild(roomDiv(`Game #${i} `, i, ...rooms[i]))
 
     let nbutton = document.createElement('div')
     nbutton.innerHTML = '<div></div><div></div>'; nbutton.onclick = newGame()
-    nbutton.id = 'new-game'; nbutton.className = `game ${nickname === undefined ? '' : 'able'}`
+    nbutton.id = 'new-game'; nbutton.className = `game ${nickname === undefined ? '' : 'able'} `
     roomsWrapper.appendChild(nbutton)
 
 
-    for (let i in users) usersWrapper.appendChild(userDiv(users[i]))
+    for (let i in users) usersWrapper.appendChild(userDiv(users[i], i))
 }
 
-// winsText.innerHTML = `WINS:   ${wins}`
-// lossesText.innerHTML = `LOSSES: ${losses}`
+// winsText.innerHTML = `WINS: ${ wins } `
+// lossesText.innerHTML = `LOSSES: ${ losses } `
 
 resign.style.display = 'none'
-resign.onclick = () => socket.emit('game-end', undefined, 2)
+resign.onclick = () => socket.emit('game-end', undefined, 0)
 
 render()
 
