@@ -1,6 +1,7 @@
-const port = 'https://nickdevserver.herokuapp.com/';
-// const port = 'http://localhost:3000';
-console.log(window.location.hostname)
+const port = window.location.hostname ==
+    "nichowas.github.io" ?
+    'https://nickdevserver.herokuapp.com/' :
+    'http://localhost:3000';
 var socket = io.connect(port);
 
 var signIn = document.getElementsByClassName('g-signin2')[0]
