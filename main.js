@@ -192,7 +192,7 @@ async function signOut(google) {
 
     nickname = 'Guest'
     googleID = undefined
-    signInImg.style.display = 'none'
+    signInImg.src = 'guest.svg'
 
     // signInName.style.display = 'none'
     signInName.innerHTML = 'Playing as GUEST'
