@@ -117,7 +117,7 @@ socket.on('start', (users) => {
         else
             game.serverTurn.king.div.className = game.serverTurn.king.class
     })
-    socket.on('game-end', (data, w, l) => {
+    socket.on('game-end', (data, w = null, l) => {
         wins = w; losses = l
         winsText.innerHTML = `WINS:   ${wins}`
         lossesText.innerHTML = `LOSSES: ${losses}`
@@ -225,12 +225,14 @@ function resetGame(turn) {
 
 function joinGame(clients, i) {
     return (() => {
-        if (nickname !== undefined && (connected == i || clients.length < 2)) {
+        if (nickname !== undefined && (connected == i || clients.length < 2))
             if (connected === undefined || connected != i)
                 socket.emit('join', i)
             else
-                socket.emit('leave')
-        }
+                if (clients.length < 2)
+                    socket.emit('leave')
+                else
+                    socket.emit('game-end', undefined, 0)
     })
 }
 function newGame() {
@@ -248,12 +250,16 @@ function clientDiv(c) {
 }
 function roomDiv(r, i, ...clients) {
     let div = document.createElement('div')
+
+    let wrap = document.createElement('div')
+    wrap.className = 'room-users'
+
     div.className = 'room'
     div.innerHTML = r
-
     for (let c of clients) {
-        div.appendChild(clientDiv(c))
+        wrap.appendChild(clientDiv(c))
     }
+    div.appendChild(wrap)
 
     let button = document.createElement('div')
     button.id = 'join-game'
@@ -274,7 +280,9 @@ function userDiv(u, i) {
     let div = document.createElement('div')
     div.className = `user place-${Number(i) + 1}`
 
-    div.innerHTML = `<img src = ${u.src} class = "user-img"><span>${u.name}</span><span>${u.rating}</span>`
+    div.innerHTML =
+        `<img src = ${u.src} class = "user-img"><div class = 'online-indicator ${u.online ? 'online' : 'offline'}'></div>
+        <span>${u.name}</span><span>${u.rating}</span>`
 
     return div
 }

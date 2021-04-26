@@ -1,67 +1,81 @@
-html {--size: 560px}
-#container {
-    font-size: 0;
-    height: 320px;
+html {
+    --board-size: 320px; 
+    --grid-size: calc(var(--board-size) / 8);
+    --graveyard-size: 20px;
+
+    --rooms-size: 500px;
+
+    --options-size: 230px;
+    
+    font-size: 0px;
+    background-color: #fff;
 }
+body { margin-bottom: 100px;}
+
 #board {
     --dark-col: #b88b4a;
     --light-col: #e3c16f;
-
     position: relative;
-    /* bottom: 40px; */
     display: inline-block;
 
-    width: 320px;
-    height: 320px;
+    width: var(--board-size);
+    height: var(--board-size);
     background-image:
-        linear-gradient(90deg,  var(--dark-col) 40px,  var(--light-col) 40px),
-        linear-gradient(90deg, var(--light-col) 40px, var(--dark-col)  40px),
-        linear-gradient(90deg, var(--dark-col)  40px, var(--light-col) 40px),
-        linear-gradient(90deg, var(--light-col) 40px, var(--dark-col)  40px),
-        linear-gradient(90deg, var(--dark-col)  40px, var(--light-col) 40px),
-        linear-gradient(90deg, var(--light-col) 40px, var(--dark-col)  40px),
-        linear-gradient(90deg, var(--dark-col)  40px, var(--light-col)40px),
-        linear-gradient(90deg, var(--light-col) 40px, var(--dark-col)  40px);
-    background-position: 0 0, 0 40px, 0 80px, 0 120px, 0 160px, 0 200px, 0 240px, 0 280px;
+        linear-gradient(90deg,  var(--dark-col) var(--grid-size),  var(--light-col) var(--grid-size)),
+        linear-gradient(90deg, var(--light-col) var(--grid-size), var(--dark-col)  var(--grid-size)),
+        linear-gradient(90deg, var(--dark-col)  var(--grid-size), var(--light-col) var(--grid-size)),
+        linear-gradient(90deg, var(--light-col) var(--grid-size), var(--dark-col)  var(--grid-size)),
+        linear-gradient(90deg, var(--dark-col)  var(--grid-size), var(--light-col) var(--grid-size)),
+        linear-gradient(90deg, var(--light-col) var(--grid-size), var(--dark-col)  var(--grid-size)),
+        linear-gradient(90deg, var(--dark-col)  var(--grid-size), var(--light-col) var(--grid-size)),
+        linear-gradient(90deg, var(--light-col) var(--grid-size), var(--dark-col)  var(--grid-size));
+    background-position: 
+        0 0, 
+        0 var(--grid-size), 
+        0 calc(var(--grid-size) * 2), 
+        0 calc(var(--grid-size) * 3), 
+        0 calc(var(--grid-size) * 4), 
+        0 calc(var(--grid-size) * 5), 
+        0 calc(var(--grid-size) * 6), 
+        0 calc(var(--grid-size) * 7);
     background-repeat: repeat-x;
-    background-size: 80px 40px;
+    background-size: calc(var(--grid-size) * 2) var(--grid-size);
 }
+
 .graveyard-piece {
     display: inline-block;
-    width: 20px;
-    height: 20px;
-
+    width: var(--graveyard-size);
+    height:var(--graveyard-size);
 }
 #wgraveyard {
-    width: 320px;
-    height: 20px;
+    width: var(--board-size);
+    height: var(--graveyard-size);
     background-color: #eee;
     margin-bottom: 10px;
 }
 #bgraveyard {
-    width: 320px;
-    height: 20px;
+    width: var(--board-size);
+    height: var(--graveyard-size);
     background-color: #eee;
 }
+
 #game-options {
     display: inline-block;
     position: relative;
-    bottom: 160px;
-    width: calc(230px - 10px - 20px);
-    height: calc(360px - 10px - 20px);
+    width: calc(var(--options-size) - 30px);
+    height: calc(var(--board-size) + 2 * var(--graveyard-size) - 30px);
     margin-left: 10px;
     background-color: #421;
     border: 5px solid #221108;
     padding: 10px;
-    vertical-align: middle;
+    vertical-align: top;
 }
+
 #resign {
     background-color: #fff;
     padding: 5px;
-    /* padding-right: calc(100% - 10px - 30px); */
     border-radius: 5px;
     cursor: pointer;
-
     margin-top: 15px;
     box-shadow: 0px -5px #221108
 }
@@ -76,9 +90,11 @@ html {--size: 560px}
     height: 20px;
     margin-right: 10px;
 }
+
 #userdata {
     display: none;
 }
+
 #score {
     font-size: 15px;
     height: 20px;
@@ -95,6 +111,7 @@ html {--size: 560px}
 #losses {
     float: right
 }
+
 #promotion {
     display: none;
     width: calc(4 * 40px + 3 * 10px);
@@ -118,8 +135,8 @@ html {--size: 560px}
 
 .highlight {
     position: absolute;
-    width: 40px;
-    height: 40px;
+    width: var(--grid-size);
+    height: var(--grid-size);
     background-color: #f00a;
     cursor: pointer;
     z-index: 2;
@@ -133,9 +150,8 @@ html {--size: 560px}
     z-index: 1;
 
     position: absolute;
-    width: 40px;
-    height: 40px;
-    font-size: 40px;
+    width: var(--grid-size);
+    height: var(--grid-size);
     user-select: none;
     display: none;
     cursor: pointer;
@@ -144,7 +160,7 @@ html {--size: 560px}
 
 #sign-in {
     width: max-content;
-    min-width: calc(var(--size) - 20px);
+    min-width: calc(var(--board-size) + var(--options-size) + var(--rooms-size));
     height: 36px;
     margin-bottom: 10px;
     background-color: #eee;
@@ -176,17 +192,15 @@ html {--size: 560px}
     margin-left: 30px;
 }
 #signin-button {
-    width: 12px;
-    height: 12px;
+    --length: 12px;
+    width: var(--length);
+    height: var(--length);
     background: #f00;
     float: right;
     display: none;
-    font-size: 12px;
-    text-align: center;
     border-radius: 50%;
     padding: 2px;    
     
-    --length: 12px;
     transform: rotate(45deg);
     cursor: pointer;
 }
@@ -207,24 +221,43 @@ html {--size: 560px}
     margin-top: 1px;
     margin-left: calc(var(--length)/2 - 2px/2);
 }
-.room {
+
+
+#rooms {
+    display: inline-block;
+    position: relative;
+    overflow-y: scroll;
+    vertical-align: top;
+
     background-color: #eee;
-    width: calc(var(--size) - 20px);
+    width: calc(var(--rooms-size) - 10px);
     padding: 10px;
+    padding-right: 0px;
+    margin-left: 10px;
+}
+#rooms::-webkit-scrollbar{width: 15px}
+#rooms::-webkit-scrollbar-track {background-color: #ddd; }
+#rooms::-webkit-scrollbar-button {background-color: #ccc;}
+#rooms::-webkit-scrollbar-thumb {background-color: #bbb;}
+
+
+.room {
+    background-color: #ddd;
+    width: calc(var(--rooms-size) - 45px);
+    padding: 10px;
+    padding-right: 0px;
     margin-bottom: 10px;
 
-    border-radius: 10px;
+    /* border-radius: 10px; */
+}
+.room-users {
+    width: max-content;
 }
 .room-client {
-    background-color: #ddd;
-    padding: 10px;
-    width: calc(var(--size) - 50px);
-    
-    margin-top: 3px;
-    margin-bottom: 3px;
-    margin-left: 10px;
-
-    border-radius: 10px;
+    width: calc(100% + 10px);
+    margin-bottom: 5px;
+    border-bottom: solid 3px #ccc;
+    font-size: 20px;
 }
 
 .game {
@@ -235,43 +268,43 @@ html {--size: 560px}
     border-radius: 50%;
 }
 .game > div {
-    position: absolute;
+    position: relative;
 
     width: var(--length);
     height: 2px;
 
     margin-top: calc(var(--length)/2 - 2px/2);
     margin-left: 0px;
-
+    bottom: var(--length);
 }
-#join-game > div:first-child {display: none;}
-#join-game.join > div:first-child {display: block;}
-
 .game > div:first-child {
     width: 2px;
     height: var(--length);
 
     margin-top: 0px;
     margin-left: calc(var(--length)/2 - 2px/2);
-
+    bottom: 0px;
 }
-.game.able:hover {cursor: pointer;}
+.game.able {cursor: pointer;}
 
+#join-game:not(.join) > div:first-child {background-color: #fff0;}
 #join-game {
     margin-top: 10px;
-    margin-left: 10px;
-    background-color: #aaa;
+    /* margin-left: 10px; */
+    background-color: #999;
 }
-#join-game.able {background-color: #ddd;}
+#join-game.able {background-color: #ccc;}
+#join-game > div {background-color: #666;}
+#join-game.able > div {background-color: #999;}
 
-#join-game > div {background-color: #777;}
-#join-game.able > div {background-color: #aaa;}
-
-#new-game {background-color: #bbb;}
-#new-game.able {background-color: #eee;}
-
-#new-game > div {background-color: #888;}
-#new-game.able > div {background-color: #bbb;}
+#new-game {
+    position: absolute;
+    background-color: #aaa; 
+    bottom: 10px;
+}
+#new-game.able {background-color: #ddd;}
+#new-game > div {background-color: #777;}
+#new-game.able > div {background-color: #aaa;}
 
 .abcRioButtonIconImage {
     width: 20px !important;
@@ -283,52 +316,66 @@ html {--size: 560px}
 }
 
 #online-users {
-    width: var(--size);
-}
-#divider {
-    width: var(--size);
-    height: 5px;
-    background-color: #eee;
-    margin-bottom: 10px;
+    width: calc(var(--board-size) + var(--options-size) + 10px);
+    height: max-content; 
 }
 .user {
-    height: 30px;
+    height: 25px;
     background-color: #eee;
-    padding: 10px;
+    padding: 5px;
     border-radius: 10px;
     margin-bottom: 10px;
     box-shadow: 0 5px #ddd;
 }
+.user:last-child {margin-bottom: 5px;}
 .user-img{
-    height: 24px;
-    width: 24px;
+    height: 19px;
+    width: 19px;
     border: solid 3px #aaa; 
     border-radius: 50%;
 }
 .user > span {
     position: relative;
-    font-size: 20px;
-    margin-left: 10px;
+    font-size: 15px;
     vertical-align: top;
-    top: 3px;
+    top: 4px;
 }
-.user > span:last-child{float: right; }
-
+.user > span:last-child{float: right; right: 10px}
 .place-1 {
     background-color: #fd0;
     box-shadow: 0 5px #ec0, inset 0px 3px 3px #ff5;
 }
 .place-1 > .user-img { border-color: #a90;}
-
-
 .place-2 {
     background-color: #ddd;
     box-shadow: 0 5px #ccc, inset 0px 3px 3px #eee;
 }
 .place-2 > .user-img {border-color: #999;}
-
 .place-3 {
     background-color: #cd7f32;
     box-shadow: 0 5px #ad5f12, inset 0px 3px 3px #ed9f52;
 }
 .place-3 > .user-img {border-color: #9d4f02;}
+.online-indicator {
+    position: relative;
+    display: inline-block;
+    right: 10px;
+    width: 8px;
+    height: 8px;
+    border: solid 1px #000;
+    border-radius: 5px;
+}
+.online {background-color: #3f3;}
+.offline {background-color: #f33;}
+
+#main {
+    width: max-content;
+    display: flex;
+    /* height: auto; */
+}
+#main-left {
+    display: inline-block;
+}
+#chess {
+    display: inline-block;
+}
